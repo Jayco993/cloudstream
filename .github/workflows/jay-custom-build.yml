@@ -1,0 +1,60 @@
+name: Jay Custom CloudStream APK
+
+on:
+  push:
+    branches:
+      - jay-custom-subtitle-sync
+    paths:
+      - '.github/workflows/jay-custom-build.yml'
+      - 'app/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - 'gradlew'
+      - 'gradle.properties'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jay-cloudstream-apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build installable prerelease-debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configure Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon assemblePrereleaseDebug
+
+      - name: Verify APK exists
+        shell: bash
+        run: |
+          APK="$(find app/build/outputs/apk/prerelease/debug -maxdepth 1 -type f -name '*.apk' -print -quit)"
+          test -n "$APK"
+          echo "APK_PATH=$APK" >> "$GITHUB_ENV"
+          echo "Found APK: $APK"
+          ls -lh "$APK"
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CloudStream-Jay-prerelease-debug
+          path: app/build/outputs/apk/prerelease/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
