@@ -1,0 +1,969 @@
+CLOUDSTREAM v4.9.1 EXACT UPSTREAM PLAYER/GENERATOR SOURCE
+Tag commit c92e0cf02eda0429fbb4b2fcea4b528cb65aa9fb | GPL-3.0
+Some generator files are online/provider-specific. Use for interface tracing only and exclude online features from the standalone local player.
+
+
+
+### SOURCE PATH: app/src/main/java/com/lagradost/cloudstream3/ui/player/DynamicRangeCompressor.kt
+
+package com.lagradost.cloudstream3.ui.player
+
+import androidx.annotation.OptIn
+import androidx.media3.common.C
+import androidx.media3.common.audio.AudioProcessor
+import androidx.media3.common.audio.AudioProcessor.AudioFormat
+import androidx.media3.common.util.UnstableApi
+import com.lagradost.cloudstream3.CloudStreamApp.Companion.getKey
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.pow
+
+/**
+ * A dynamic range compressor for the audio player.
+ *
+ * ## What it does
+ * A dynamic range compressor automatically turns down loud sounds and turns up
+ * quiet ones, narrowing the gap between the loudest and quietest moments.
+ * This is useful for watching movies or TV shows where action/explosion scenes
+ * are very loud but dialogue scenes are very quiet — the compressor brings
+ * everything to a more comfortable, even volume.
+ *
+ * ## Algorithm
+ * Implements a standard single-band feed-forward peak compressor using a
+ * 1-pole IIR envelope follower. This is the same algorithm used in most
+ * audio software (Audacity, VLC, etc.) and is well-established DSP. It is
+ * NOT a port or derivative of any specific implementation — the math is
+ * standard and covered extensively in audio engineering literature
+ * (e.g. Zölzer "Digital Audio Signal Processing").
+ *
+ * Uses a single shared envelope across all channels so left and right always
+ * receive identical gain — independent per-channel envelopes would destroy
+ * the stereo image.
+ *
+ * Handles both PCM_16BIT and PCM_FLOAT (both are used by ExoPlayer depending
+ * on the source and device). Always stays "active" in the pipeline so that
+ * enable/disable works instantly without reloading the player — when disabled,
+ * samples are copied unchanged (passthrough).
+ */
+internal const val COMPRESSOR_ENABLED_KEY = "player_compressor_enabled"
+internal const val COMPRESSOR_THRESHOLD_KEY = "player_compressor_threshold"
+internal const val COMPRESSOR_RATIO_KEY = "player_compressor_ratio"
+internal const val COMPRESSOR_ATTACK_KEY = "player_compressor_attack"
+internal const val COMPRESSOR_RELEASE_KEY = "player_compressor_release"
+internal const val COMPRESSOR_MAKEUP_KEY = "player_compressor_makeup"
+
+@OptIn(UnstableApi::class)
+class DynamicRangeCompressor : AudioProcessor {
+
+    @Volatile var enabled: Boolean = false
+
+    /**
+     * The level (in dB) above which compression kicks in. Signals quieter than
+     * this pass through unchanged; louder signals get compressed.
+     * Lower = compresses more content (including quieter sounds like dialogue).
+     * -24 dB is a good starting point for movies: it catches action peaks
+     * while leaving quiet dialogue mostly untouched before makeup gain.
+     */
+    @Volatile var threshold: Float = -24f  // dB, range -30..0
+
+    /**
+     * How aggressively to compress sounds that exceed the threshold.
+     * A ratio of 8:1 means an 8 dB increase above the threshold becomes only
+     * 1 dB in the output. Higher = more "squashed" dynamic range.
+     * Below ~2 is barely noticeable; above ~10 sounds very processed/radio-like.
+     */
+    @Volatile var ratio: Float = 8f  // n:1, range 1..20
+
+    /**
+     * How quickly (in ms) the compressor clamps down when a loud sound starts.
+     * Too low (< 1 ms): no transient punch, sounds dull.
+     * Too high (> 50 ms): loud transients slip through before gain reduces.
+     * 5 ms preserves punch while still catching most action scene peaks.
+     */
+    @Volatile var attackMs: Float = 5f  // ms, range 1..400
+
+    /**
+     * How quickly (in ms) the compressor lets go after a loud sound ends.
+     * Too low (< 50 ms): audible "pumping" — volume visibly breathes up/down.
+     * Too high (> 800 ms): gain stays low too long, quieter sounds after
+     * an action scene stay suppressed for a noticeable time.
+     * 400 ms is slow enough to be transparent on most movie content.
+     */
+    @Volatile var releaseMs: Float = 400f  // ms, range 2..800
+
+    /**
+     * Output gain (in dB) applied after compression.
+     * Compression reduces overall loudness so makeup gain brings it back up.
+     * +12 dB compensates for the typical reduction at a 8:1 ratio with a
+     * -24 dB threshold, and also lifts quiet dialogue to a more audible level.
+     * Too high risks clipping on uncompressed peaks below the threshold.
+     */
+    @Volatile var makeupGain: Float = 12f  // dB, range 0..24
+
+    fun restoreSavedSettings() {
+        enabled = getKey<Boolean>(COMPRESSOR_ENABLED_KEY) ?: false
+        threshold = getKey<Float>(COMPRESSOR_THRESHOLD_KEY) ?: -24f
+        ratio = getKey<Float>(COMPRESSOR_RATIO_KEY) ?: 8f
+        attackMs = getKey<Float>(COMPRESSOR_ATTACK_KEY) ?: 5f
+        releaseMs = getKey<Float>(COMPRESSOR_RELEASE_KEY) ?: 400f
+        makeupGain = getKey<Float>(COMPRESSOR_MAKEUP_KEY) ?: 12f
+    }
+
+    private var format       = AudioFormat.NOT_SET
+    private var isFloat      = false
+    private var sampleRate   = 44100
+    private var channelCount = 2
+
+    // Single shared envelope across all channels — keeps L/R gain identical
+    // so stereo image is preserved and no crackling from gain mismatch.
+    private var envelope = 0f
+
+    private var attackCoeff    = 0f
+    private var releaseCoeff   = 0f
+    private var lastAttackMs   = -1f
+    private var lastReleaseMs  = -1f
+    private var lastSampleRate = -1
+
+    private var outputBuffer: ByteBuffer = AudioProcessor.EMPTY_BUFFER
+    private var inputEnded = false
+
+    // ── AudioProcessor ────────────────────────────────────────────────────────
+
+    override fun configure(inputAudioFormat: AudioFormat): AudioFormat {
+        if (inputAudioFormat.encoding != C.ENCODING_PCM_16BIT &&
+            inputAudioFormat.encoding != C.ENCODING_PCM_FLOAT) {
+            return inputAudioFormat  // pass unsupported formats through unchanged
+        }
+        format       = inputAudioFormat
+        isFloat      = inputAudioFormat.encoding == C.ENCODING_PCM_FLOAT
+        sampleRate   = inputAudioFormat.sampleRate
+        channelCount = inputAudioFormat.channelCount
+        envelope     = 0f
+        return inputAudioFormat
+    }
+
+    // Always active when format is set — toggling isActive() mid-stream has no
+    // effect in media3 (only checked at configure() time). We do passthrough
+    // in queueInput() instead so enable/disable works immediately.
+    override fun isActive(): Boolean =
+        format != AudioFormat.NOT_SET &&
+        (format.encoding == C.ENCODING_PCM_16BIT || format.encoding == C.ENCODING_PCM_FLOAT)
+
+    override fun queueInput(inputBuffer: ByteBuffer) {
+        if (!inputBuffer.hasRemaining()) return
+        val remaining = inputBuffer.remaining()
+        val out = replaceOutputBuffer(remaining)
+        if (!enabled) { out.put(inputBuffer); out.flip(); return }
+        updateCoefficients()
+        val makeupLinear = dbToLinear(makeupGain)
+        val threshLinear = dbToLinear(threshold)
+        val bytesPerSample = if (isFloat) 4 else 2
+        val frameCount = remaining / (channelCount * bytesPerSample)
+        if (isFloat) processFloat(inputBuffer, out, frameCount, threshLinear, makeupLinear)
+        else processShort(inputBuffer, out, frameCount, threshLinear, makeupLinear)
+        out.flip()
+    }
+
+    /** Processes PCM_FLOAT frames. Two-pass: peak detection then gain application. */
+    private fun processFloat(
+        input: ByteBuffer, out: ByteBuffer,
+        frameCount: Int, threshLinear: Float, makeupLinear: Float
+    ) {
+        repeat(frameCount) {
+            val frameStart = input.position()
+            var peak = 0f
+            repeat(channelCount) { val s = input.getFloat(); val a = if (s < 0f) -s else s; if (a > peak) peak = a }
+            advanceEnvelope(peak)
+            val gain = computeGain(threshLinear) * makeupLinear
+            input.position(frameStart)
+            repeat(channelCount) { out.putFloat(input.getFloat() * gain) }
+        }
+    }
+
+    /** Processes PCM_16BIT frames. Two-pass: peak detection then gain application. */
+    private fun processShort(
+        input: ByteBuffer, out: ByteBuffer,
+        frameCount: Int, threshLinear: Float, makeupLinear: Float
+    ) {
+        repeat(frameCount) {
+            val frameStart = input.position()
+            var peak = 0f
+            repeat(channelCount) { val s = input.getShort() / 32768f; val a = if (s < 0f) -s else s; if (a > peak) peak = a }
+            advanceEnvelope(peak)
+            val gain = computeGain(threshLinear) * makeupLinear
+            input.position(frameStart)
+            repeat(channelCount) {
+                val s = input.getShort() / 32768f
+                out.putShort((s * gain).coerceIn(-1f, 1f).let { (it * 32768f).toInt().toShort() })
+            }
+        }
+    }
+
+    private fun advanceEnvelope(peak: Float) {
+        val coeff = if (peak > envelope) attackCoeff else releaseCoeff
+        envelope = peak + coeff * (envelope - peak)
+    }
+
+    override fun queueEndOfStream() { inputEnded = true }
+
+    override fun getOutput(): ByteBuffer {
+        val out = outputBuffer
+        outputBuffer = AudioProcessor.EMPTY_BUFFER
+        return out
+    }
+
+    override fun isEnded(): Boolean =
+        inputEnded && outputBuffer === AudioProcessor.EMPTY_BUFFER
+
+    // AudioProcessor.flush() (no-arg) is deprecated upstream in favor of a
+    // seek-aware overload, but this interface implementation still only exposes
+    // the no-arg version to override, so this suppresses that specific warning
+    // without adding @Deprecated (which would cascade to our own reset() below,
+    // since it calls flush() internally).
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun flush() {
+        // Called on every seek. Reset envelope so there's no gain burst
+        // from stale state — which is what caused crackling after skipping.
+        envelope = 0f
+        outputBuffer = AudioProcessor.EMPTY_BUFFER
+        inputEnded = false
+    }
+
+    override fun reset() {
+        flush()
+        format = AudioFormat.NOT_SET
+        isFloat = false
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private fun computeGain(threshLinear: Float): Float {
+        return if (envelope <= threshLinear) {
+            1f
+        } else {
+            val overDb = linearToDb(envelope) - threshold
+            dbToLinear(-(overDb * (1f - 1f / ratio)))
+        }
+    }
+
+    private fun replaceOutputBuffer(size: Int): ByteBuffer {
+        if (outputBuffer.capacity() < size) {
+            outputBuffer = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder())
+        } else {
+            outputBuffer.clear()
+        }
+        return outputBuffer
+    }
+
+    private fun updateCoefficients() {
+        if (attackMs  == lastAttackMs  &&
+            releaseMs == lastReleaseMs &&
+            sampleRate == lastSampleRate) return
+        lastAttackMs   = attackMs
+        lastReleaseMs  = releaseMs
+        lastSampleRate = sampleRate
+        attackCoeff  = exp(-1.0 / (sampleRate * attackMs  / 1000.0)).toFloat()
+        releaseCoeff = exp(-1.0 / (sampleRate * releaseMs / 1000.0)).toFloat()
+    }
+
+    private fun dbToLinear(db: Float): Float = 10f.pow(db / 20f)
+    private fun linearToDb(linear: Float): Float =
+        if (linear <= 0f) -120f else (20.0 * ln(linear.toDouble()) / ln(10.0)).toFloat()
+}
+
+
+
+### SOURCE PATH: app/src/main/java/com/lagradost/cloudstream3/ui/player/PlayerGeneratorViewModel.kt
+
+package com.lagradost.cloudstream3.ui.player
+
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.lagradost.cloudstream3.LoadResponse
+import com.lagradost.cloudstream3.mvvm.Resource
+import com.lagradost.cloudstream3.mvvm.launchSafe
+import com.lagradost.cloudstream3.mvvm.logError
+import com.lagradost.cloudstream3.mvvm.safeApiCall
+import com.lagradost.cloudstream3.ui.player.source_priority.ProfileSettings
+import com.lagradost.cloudstream3.ui.player.source_priority.QualityDataHelper
+import com.lagradost.cloudstream3.ui.player.source_priority.QualityDataHelper.getLinkPriority
+import com.lagradost.cloudstream3.ui.result.ResultEpisode
+import com.lagradost.cloudstream3.utils.Coroutines.ioSafe
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
+import com.lagradost.cloudstream3.utils.videoskip.SkipAPI
+import com.lagradost.cloudstream3.utils.videoskip.VideoSkipStamp
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import org.jetbrains.annotations.Contract
+import java.util.concurrent.ConcurrentHashMap
+
+typealias VideoLink = Pair<ExtractorLink?, ExtractorUri?>
+
+data class GeneratorState(
+    val meta: Any?,
+    val nextMeta: Any?,
+    val allMeta: List<*>?,
+    val response: LoadResponse?,
+    val index: Int,
+    val id: Int?,
+)
+
+data class DisplayLink(
+    val link: VideoLink,
+    // If the link should be displayed and used by the player
+    val shouldUseLink: Boolean,
+    val priority: Int
+)
+
+/** Immutable state of all current links relevant to displaying the video */
+// @MustUseReturnValues
+// @Immutable
+data class VideoState(
+    val subtitles: PersistentSet<SubtitleData> = persistentSetOf(),
+    val links: PersistentSet<VideoLink> = persistentSetOf(),
+    val erroredLinks: PersistentSet<VideoLink> = persistentSetOf(),
+    val stamps: PersistentList<VideoSkipStamp> = persistentListOf(),
+    val loading: Resource<Unit> = Resource.Loading(),
+    val generatorState: GeneratorState? = null,
+    val instance: Int,
+) {
+    /**
+     * This acts as a local cache for sorted links that are not copied over by the copy constructor.
+     *
+     * sortedBy is not exactly expensive, but each hasNextMirror does it again, so this alleviates unnecessary recomputation
+     * */
+    private val sortedLinks: ConcurrentHashMap<Int, List<DisplayLink>> = ConcurrentHashMap()
+
+    /**
+     * The cache is guaranteed to be up to date link-wise due to the immutable links.
+     * However, hideNegativeSources and hideErrorSources could be updated, which requires clearing the cache.
+     */
+    fun clearSortedLinksCache() = sortedLinks.clear()
+
+    private fun hasLinkErrored(link: VideoLink): Boolean {
+        return erroredLinks.any { it == link }
+    }
+
+    private fun VideoLink.toDisplayLink(
+        qualityProfile: Int,
+        hideNegativeSources: Boolean,
+        hideErrorSources: Boolean
+    ): DisplayLink {
+        val priority = getLinkPriority(qualityProfile, this.first)
+        val shouldHideLink =
+            (hideNegativeSources && priority < 0) || (hideErrorSources && hasLinkErrored(this))
+        val displayLink = DisplayLink(this, !shouldHideLink, priority)
+
+        return displayLink
+    }
+
+    // Modifying sortedLinks is not considered a "visible" side effect, and rerunning it does not change the result
+    // It is by all standards, idempotent and by extension also pure as it has no "visible" side effect
+    /** Returns .links in the sorted order according to the qualityProfile.
+     * Use .links if order is not needed */
+    @Contract(pure = true)
+    fun sortLinks(qualityProfile: Int): List<DisplayLink> {
+        sortedLinks[qualityProfile]?.let {
+            return it
+        }
+
+        val hideNegativeSources =
+            QualityDataHelper.getProfileSetting(qualityProfile, ProfileSettings.HideNegativeSources)
+        val hideErrorSources =
+            QualityDataHelper.getProfileSetting(qualityProfile, ProfileSettings.HideErrorSources)
+
+        return links.map { link ->
+            // negative because we want to sort highest quality first
+            link.toDisplayLink(qualityProfile, hideNegativeSources, hideErrorSources)
+        }.sortedBy {
+            // negative because we want to sort highest quality first
+            -it.priority
+        }.also { value -> sortedLinks[qualityProfile] = value }
+    }
+
+    @Contract(pure = true)
+    fun add(item: SubtitleData): VideoState = copy(subtitles = subtitles.add(item))
+
+    @Contract(pure = true)
+    fun add(item: VideoLink): VideoState = copy(links = links.add(item))
+
+    @Contract(pure = true)
+    fun add(item: VideoSkipStamp): VideoState = copy(stamps = stamps.add(item))
+
+    @JvmName("addSubtitleData")
+    @Contract(pure = true)
+    fun add(items: Collection<SubtitleData>): VideoState = copy(subtitles = subtitles.addAll(items))
+
+    @JvmName("addVideoLink")
+    @Contract(pure = true)
+    fun add(items: Collection<VideoLink>): VideoState = copy(links = links.addAll(items))
+
+    @JvmName("addVideoSkipStamp")
+    @Contract(pure = true)
+    fun add(items: Collection<VideoSkipStamp>): VideoState = copy(stamps = stamps.addAll(items))
+
+    @Contract(pure = true)
+    fun set(item: SubtitleData): VideoState = copy(subtitles = persistentSetOf(item))
+
+    @Contract(pure = true)
+    fun set(item: VideoLink): VideoState = copy(links = persistentSetOf(item))
+
+    @Contract(pure = true)
+    fun set(item: VideoSkipStamp): VideoState = copy(stamps = persistentListOf(item))
+
+    @JvmName("setSubtitleData")
+    @Contract(pure = true)
+    fun set(items: Collection<SubtitleData>): VideoState = copy(subtitles = items.toPersistentSet())
+
+    @JvmName("setVideoLink")
+    @Contract(pure = true)
+    fun set(items: Collection<VideoLink>): VideoState = copy(links = items.toPersistentSet())
+
+    @JvmName("setVideoSkipStamp")
+    @Contract(pure = true)
+    fun set(items: Collection<VideoSkipStamp>): VideoState = copy(stamps = items.toPersistentList())
+
+    @Contract(pure = true)
+    fun addError(item: VideoLink): VideoState = copy(erroredLinks = erroredLinks.add(item))
+
+    @Contract(pure = true)
+    fun setError(items: Collection<VideoLink>): VideoState = copy(erroredLinks = items.toPersistentSet())
+}
+
+data class VideoLive<T>(
+    val value: T,
+    val instance: Int,
+)
+
+class PlayerGeneratorViewModel : ViewModel() {
+    companion object {
+        const val TAG = "PlayViewGen"
+    }
+
+    @Volatile
+    var generator: VideoGenerator<*>? = null
+
+    @Volatile
+    var episodeIndex: Int = 0
+
+    /**
+     * The state of the video player, only modify it by modifyState to make sure observe is called,
+     * and avoid concurrency issues.
+     *
+     * This value can be used without Synchronized or locking when reading, as all fields are immutable.
+     * */
+    @Volatile
+    var state = VideoState(instance = 0)
+        private set
+
+    private val _currentLinks = MutableLiveData<VideoLive<Set<VideoLink>>>(null)
+    val currentLinks: LiveData<VideoLive<Set<VideoLink>>> = _currentLinks
+
+    private val _currentSubtitles = MutableLiveData<VideoLive<Set<SubtitleData>>>(null)
+    val currentSubtitles: LiveData<VideoLive<Set<SubtitleData>>> = _currentSubtitles
+
+    private val _loadingLinks = MutableLiveData<VideoLive<Resource<Unit>>>()
+    val loadingLinks: LiveData<VideoLive<Resource<Unit>>> = _loadingLinks
+
+    private val _currentStamps = MutableLiveData<VideoLive<List<VideoSkipStamp>>>(null)
+    val currentStamps: LiveData<VideoLive<List<VideoSkipStamp>>> = _currentStamps
+
+    /**
+     * Modifies the `state` variable safely, and with the correct observe behavior.
+     *
+     * Synchronized to avoid concurrency issues, and make this operation atomic.
+     * Otherwise, one update may be lost if they are done in parallel.
+     * */
+    @Synchronized
+    fun modifyState(op: VideoState.() -> VideoState) {
+        val oldState = state
+        state = op.invoke(oldState)
+
+        /** New instance, always push state */
+        if (state.instance != oldState.instance) {
+            _currentSubtitles.postValue(VideoLive(state.subtitles, state.instance))
+            _currentStamps.postValue(VideoLive(state.stamps, state.instance))
+            _currentLinks.postValue(VideoLive(state.links, state.instance))
+            _loadingLinks.postValue(VideoLive(state.loading, state.instance))
+            return
+        }
+
+        /**
+         * Only post the changed values, this makes sure we do not invoke the "observe"
+         *
+         * We do this by "Referential equality" https://kotlinlang.org/docs/equality.html#referential-equality
+         * to avoid comparing the entire set or list as "Persistent" classes will hold the same reference if they are unchanged.
+         * */
+        if (state.links !== oldState.links)
+            _currentLinks.postValue(VideoLive(state.links, state.instance))
+        if (state.stamps !== oldState.stamps)
+            _currentStamps.postValue(VideoLive(state.stamps, state.instance))
+        if (state.subtitles !== oldState.subtitles)
+            _currentSubtitles.postValue(VideoLive(state.subtitles, state.instance))
+
+        /** Normal equality here as it is not a collection */
+        if (state.loading != oldState.loading)
+            _loadingLinks.postValue(VideoLive(state.loading, state.instance))
+    }
+
+    private val _currentSubtitleYear = MutableLiveData<Int?>(null)
+    val currentSubtitleYear: LiveData<Int?> = _currentSubtitleYear
+
+    /**
+     * Save the Episode ID to prevent starting multiple link loading Jobs when preloading links.
+     */
+    private var currentLoadingEpisodeId: Int? = null
+
+    var forceClearCache = false
+
+    fun setSubtitleYear(year: Int?) {
+        _currentSubtitleYear.postValue(year)
+    }
+
+    fun loadLinksPrev() {
+        Log.i(TAG, "loadLinksPrev")
+        if (generator?.hasPrev(episodeIndex) == true) {
+            episodeIndex += 1
+            loadLinks()
+        }
+    }
+
+    fun loadLinksNext() {
+        Log.i(TAG, "loadLinksNext")
+        if (generator?.hasNext(episodeIndex) == true) {
+            episodeIndex += 1
+            loadLinks()
+        }
+    }
+
+    fun hasNextEpisode(): Boolean? {
+        return generator?.hasNext(episodeIndex)
+    }
+
+    fun hasPrevEpisode(): Boolean? {
+        return generator?.hasPrev(episodeIndex)
+    }
+
+    fun preLoadNextLinks() {
+        val id = generator?.getId(episodeIndex)
+        // Do not preload if already loading
+        if (id == currentLoadingEpisodeId) return
+
+        Log.i(TAG, "preLoadNextLinks")
+        currentJob?.cancel()
+        currentLoadingEpisodeId = id
+
+        currentJob = viewModelScope.launch {
+            try {
+                if (generator?.hasCache == true && generator?.hasNext(episodeIndex) == true) {
+                    safeApiCall {
+                        generator?.generateLinks(
+                            sourceTypes = LOADTYPE_INAPP,
+                            clearCache = false,
+                            isCasting = false,
+                            callback = {},
+                            subtitleCallback = {},
+                            offset = episodeIndex + 1
+                        )
+                    }
+                }
+            } catch (t: Throwable) {
+                logError(t)
+            } finally {
+                if (currentLoadingEpisodeId == id) {
+                    currentLoadingEpisodeId = null
+                }
+            }
+        }
+    }
+
+    fun loadThisEpisode(index: Int) {
+        episodeIndex = index
+        loadLinks()
+    }
+
+    fun attachGenerator(newGenerator: VideoGenerator<*>, index: Int) {
+        Log.i(TAG, "attachGenerator with generator=$newGenerator and index=$index")
+        generator = newGenerator
+        episodeIndex = index
+    }
+
+    /**
+     * If duplicate nothing will happen
+     * */
+    fun addSubtitles(file: Set<SubtitleData>) {
+        val validFile = file.filter(::isValidSubtitle)
+        if (validFile.isNotEmpty())
+            modifyState {
+                add(validFile)
+            }
+    }
+
+    private var currentJob: Job? = null
+    private var currentStampJob: Job? = null
+
+    fun loadStamps(duration: Long) {
+        currentStampJob = ioSafe {
+            val genState = state.generatorState ?: return@ioSafe
+            val meta = genState.meta
+            val page = genState.response
+            val id = genState.id
+            if (page == null || meta !is ResultEpisode) {
+                return@ioSafe
+            }
+            val stamps = SkipAPI.videoStamps(
+                page,
+                meta,
+                duration,
+                hasNextEpisode() ?: false
+            )
+
+            /** Avoid adding stamps to the wrong video */
+            modifyState {
+                if (id != this.generatorState?.id) {
+                    this
+                } else {
+                    set(stamps)
+                }
+            }
+        }
+    }
+
+    var langFilterList = listOf<String>()
+    var filterSubByLang = false
+
+    fun isValidSubtitle(subtitle: SubtitleData): Boolean {
+        if (langFilterList.isEmpty() || !filterSubByLang) {
+            return true
+        }
+
+        /** Only filter out subtitles fetched online */
+        if (subtitle.origin != SubtitleOrigin.URL) {
+            return true
+        }
+
+        return langFilterList.any { lang ->
+            subtitle.originalName.contains(lang, ignoreCase = true)
+        }
+    }
+
+    fun loadLinks(sourceTypes: Set<ExtractorLinkType> = LOADTYPE_INAPP) {
+        Log.i(TAG, "loadLinks with generator=$generator and index=$episodeIndex")
+        currentJob?.cancel()
+        val index = episodeIndex
+
+        // Clear old data and reset the state
+        modifyState {
+            VideoState(
+                loading = Resource.Loading(),
+                generatorState = generator?.let { gen ->
+                    GeneratorState(
+                        meta = gen.videos.getOrNull(index),
+                        nextMeta = gen.videos.getOrNull(index + 1),
+                        id = gen.getId(index),
+                        response = (gen as? RepoLinkGenerator)?.page,
+                        index = index,
+                        allMeta = gen.videos
+                    )
+                },
+                instance = instance + 1
+            )
+        }
+
+        currentJob = viewModelScope.launchSafe {
+            // Load more data
+            val loadingState = safeApiCall {
+                generator?.generateLinks(
+                    sourceTypes = sourceTypes,
+                    clearCache = forceClearCache,
+                    callback = { link ->
+                        if (isActive)
+                            modifyState {
+                                add(link)
+                            }
+                    },
+                    isCasting = false,
+                    offset = index,
+                    subtitleCallback = { link ->
+                        if (isActive && isValidSubtitle(link))
+                            modifyState {
+                                add(link)
+                            }
+                    })
+                Unit
+            }
+
+            if (!isActive) {
+                return@launchSafe
+            }
+
+            /** Only mark as success if we have not skipped loading */
+            modifyState {
+                if (!isActive) {
+                    this
+                } else {
+                    when (loading) {
+                        is Resource.Loading -> copy(loading = loadingState)
+                        else -> this
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+### SOURCE PATH: app/src/main/java/com/lagradost/cloudstream3/ui/player/IGenerator.kt
+
+package com.lagradost.cloudstream3.ui.player
+
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
+
+val LOADTYPE_INAPP = setOf(
+    ExtractorLinkType.VIDEO,
+    ExtractorLinkType.DASH,
+    ExtractorLinkType.M3U8,
+    ExtractorLinkType.TORRENT,
+    ExtractorLinkType.MAGNET
+)
+
+val LOADTYPE_INAPP_DOWNLOAD = setOf(
+    ExtractorLinkType.VIDEO,
+    ExtractorLinkType.M3U8
+)
+
+val LOADTYPE_CHROMECAST = setOf(
+    ExtractorLinkType.VIDEO,
+    ExtractorLinkType.DASH,
+    ExtractorLinkType.M3U8
+)
+
+val LOADTYPE_ALL = ExtractorLinkType.entries.toSet()
+
+
+abstract class NoVideoGenerator(val id : Int?) : VideoGenerator<Nothing>(emptyList()) {
+    override val hasCache = false
+    override val canSkipLoading = false
+    override fun getId(index: Int): Int? = id
+}
+
+abstract class VideoGenerator<T : Any>(val videos: List<T>) {
+    abstract val hasCache: Boolean
+    abstract val canSkipLoading: Boolean
+    abstract fun getId(index : Int) : Int?
+
+    fun hasNext(videoIndex : Int): Boolean = videoIndex < videos.lastIndex
+    fun hasPrev(videoIndex : Int): Boolean = videoIndex > 0
+
+    @Throws
+    abstract suspend fun generateLinks(
+        clearCache: Boolean,
+        sourceTypes: Set<ExtractorLinkType>,
+        callback: (Pair<ExtractorLink?, ExtractorUri?>) -> Unit,
+        subtitleCallback: (SubtitleData) -> Unit,
+        offset: Int,
+        isCasting: Boolean
+    ): Boolean
+}
+
+
+
+### SOURCE PATH: app/src/main/java/com/lagradost/cloudstream3/ui/player/LinkGenerator.kt
+
+package com.lagradost.cloudstream3.ui.player
+
+import android.net.Uri
+import com.lagradost.cloudstream3.TvType
+import com.lagradost.cloudstream3.actions.temp.CloudStreamPackage
+import com.lagradost.cloudstream3.amap
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
+import com.lagradost.cloudstream3.utils.INFER_TYPE
+import com.lagradost.cloudstream3.utils.Qualities
+import com.lagradost.cloudstream3.utils.loadExtractor
+import com.lagradost.cloudstream3.utils.newExtractorLink
+import com.lagradost.cloudstream3.utils.unshortenLinkSafe
+
+data class ExtractorUri(
+    val uri: Uri,
+    val name: String,
+
+    val basePath: String? = null,
+    val relativePath: String? = null,
+    val displayName: String? = null,
+
+    val id: Int? = null,
+    val parentId: Int? = null,
+    val episode: Int? = null,
+    val season: Int? = null,
+    val headerName: String? = null,
+    val tvType: TvType? = null,
+)
+
+/**
+ * Used to open the player more easily with the LinkGenerator
+ **/
+data class BasicLink(
+    val url: String,
+    val name: String? = null,
+)
+
+class LinkGenerator(
+    private val links: List<BasicLink>,
+    private val extract: Boolean = true,
+    private val refererUrl: String? = null,
+    id: Int?
+) : NoVideoGenerator(id) {
+    override suspend fun generateLinks(
+        clearCache: Boolean,
+        sourceTypes: Set<ExtractorLinkType>,
+        callback: (Pair<ExtractorLink?, ExtractorUri?>) -> Unit,
+        subtitleCallback: (SubtitleData) -> Unit,
+        offset: Int,
+        isCasting: Boolean
+    ): Boolean {
+        links.amap { link ->
+            if (!extract || !loadExtractor(link.url, refererUrl, {
+                    subtitleCallback(PlayerSubtitleHelper.getSubtitleData(it))
+                }) {
+                    callback(it to null)
+                }) {
+
+                // if don't extract or if no extractor found simply return the link
+                callback(
+                    newExtractorLink(
+                        "",
+                        link.name ?: link.url,
+                        unshortenLinkSafe(link.url), // unshorten because it might be a raw link
+                        type = INFER_TYPE,
+                    ) {
+                        this.referer = refererUrl ?: ""
+                        this.quality = Qualities.Unknown.value
+                    } to null
+                )
+            }
+        }
+
+        return true
+    }
+}
+
+class MinimalLinkGenerator(
+    private val links: List<CloudStreamPackage.MinimalVideoLink>,
+    private val subs: List<CloudStreamPackage.MinimalSubtitleLink>,
+    id: Int?
+) : NoVideoGenerator(id) {
+    override suspend fun generateLinks(
+        clearCache: Boolean,
+        sourceTypes: Set<ExtractorLinkType>,
+        callback: (Pair<ExtractorLink?, ExtractorUri?>) -> Unit,
+        subtitleCallback: (SubtitleData) -> Unit,
+        offset: Int,
+        isCasting: Boolean
+    ): Boolean {
+        for (link in links) {
+            callback(link.toExtractorLink())
+        }
+        for (link in subs) {
+            subtitleCallback(link.toSubtitleData())
+        }
+
+        return true
+    }
+}
+
+
+### SOURCE PATH: app/src/main/java/com/lagradost/cloudstream3/ui/player/DownloadFileGenerator.kt
+
+package com.lagradost.cloudstream3.ui.player
+
+import android.net.Uri
+import com.lagradost.cloudstream3.CloudStreamApp.Companion.context
+import com.lagradost.cloudstream3.CommonActivity.activity
+import com.lagradost.cloudstream3.R
+import com.lagradost.cloudstream3.ui.player.PlayerSubtitleHelper.Companion.toSubtitleMimeType
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.ExtractorLinkType
+import com.lagradost.cloudstream3.utils.SubtitleHelper.fromLanguageToTagIETF
+import com.lagradost.cloudstream3.utils.SubtitleUtils.cleanDisplayName
+import com.lagradost.cloudstream3.utils.SubtitleUtils.isMatchingSubtitle
+import com.lagradost.cloudstream3.utils.downloader.DownloadFileManagement.getFolder
+import com.lagradost.cloudstream3.utils.downloader.VideoDownloadManager.getDownloadFileInfo
+
+class DownloadFileGenerator(
+    episodes: List<ExtractorUri>
+) : VideoGenerator<ExtractorUri>(episodes) {
+    override val hasCache = false
+    override val canSkipLoading = false
+
+    override fun getId(index: Int): Int? = this.videos.getOrNull(index)?.id
+
+    override suspend fun generateLinks(
+        clearCache: Boolean,
+        sourceTypes: Set<ExtractorLinkType>,
+        callback: (Pair<ExtractorLink?, ExtractorUri?>) -> Unit,
+        subtitleCallback: (SubtitleData) -> Unit,
+        offset: Int,
+        isCasting: Boolean
+    ): Boolean {
+        val meta = videos.getOrNull(offset) ?: return false
+
+        if (meta.uri == Uri.EMPTY) {
+            // We do this here so that we only load it when
+            // we actually need it as it can be more expensive.
+            val info = meta.id?.let { id ->
+                activity?.let { act ->
+                    getDownloadFileInfo(act, id)
+                }
+            }
+
+            if (info != null) {
+                val newMeta = meta.copy(uri = info.path)
+                callback(null to newMeta)
+            } else callback(null to meta)
+        } else callback(null to meta)
+
+        val ctx = context ?: return true
+        val relative = meta.relativePath ?: return true
+        val display = meta.displayName ?: return true
+
+        val cleanDisplay = cleanDisplayName(display)
+
+        getFolder(ctx, relative, meta.basePath)?.forEach { (name, uri) ->
+            if (isMatchingSubtitle(name, display, cleanDisplay)) {
+                val cleanName = cleanDisplayName(name)
+                val lastNum = Regex(" ([0-9]+)$")
+                val nameSuffix = lastNum.find(cleanName)?.groupValues?.get(1) ?: ""
+                val originalName = cleanName.removePrefix(cleanDisplay).replace(lastNum, "").trim()
+
+                subtitleCallback(
+                    SubtitleData(
+                        originalName.ifBlank { ctx.getString(R.string.default_subtitles) },
+                        nameSuffix,
+                        uri.toString(),
+                        SubtitleOrigin.DOWNLOADED_FILE,
+                        name.toSubtitleMimeType(),
+                        emptyMap(),
+                        fromLanguageToTagIETF(originalName, true)
+                    )
+                )
+            }
+        }
+
+        return true
+    }
+}
