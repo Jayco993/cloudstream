@@ -1,0 +1,54 @@
+name: Jay stable APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - jay-4.9.1-stable
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout version-matched source
+        uses: actions/checkout@v4
+        with:
+          ref: jay-4.9.1-stable
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build stable debug fallback
+        run: ./gradlew --no-daemon :app:assembleStableDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudstream-jay-v4.9.1-stable
+          path: app/build/outputs/apk/stable/debug/*.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: jay-v4.9.1-stable-1
+          name: CloudStream Jay v4.9.1 (stable source)
+          target_commitish: jay-4.9.1-stable
+          prerelease: false
+          generate_release_notes: false
+          body: |
+            Custom CloudStream build based on upstream v4.9.1.
+            Upstream base commit: c92e0cf02eda0429fbb4b2fcea4b528cb65aa9fb
+
+            Only app name and stable-flavor application ID suffix were changed.
+            Built as stableDebug because no release signing key was configured.
+          files: app/build/outputs/apk/stable/debug/*.apk
