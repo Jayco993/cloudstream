@@ -1,0 +1,3487 @@
+CLOUDSTREAM v4.9.1 EXACT PLAYER LAYOUT/STRING RESOURCES
+Tag commit c92e0cf02eda0429fbb4b2fcea4b528cb65aa9fb | GPL-3.0
+Adapt resources as needed, retaining required player controls and labels.
+
+
+
+### SOURCE PATH: app/src/main/res/layout/fragment_player.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="horizontal"
+    app:backgroundTint="@android:color/black"
+    app:surface_type="texture_view">
+    <!--
+          app:fastforward_increment="10000"
+            app:rewind_increment="10000"-->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:focusable="false"
+        app:auto_show="true"
+        app:backgroundTint="@android:color/black"
+        app:controller_layout_id="@layout/player_custom_layout"
+        app:hide_on_touch="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:show_timeout="0" />
+
+    <FrameLayout
+        android:id="@+id/player_loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:backgroundTint="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/overlay_loading_skip_button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="70dp"
+            android:backgroundTint="@color/transparent"
+
+            android:text="@string/skip_loading"
+            android:textAllCaps="false"
+            android:textColor="@color/textColor"
+            android:visibility="gone"
+            app:cornerRadius="4dp"
+            app:icon="@drawable/ic_baseline_skip_next_24"
+            app:iconTint="@color/textColor"
+            app:rippleColor="?attr/colorPrimary"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/main_load"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center" />
+
+        <FrameLayout
+            android:id="@+id/video_go_back_holder_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/go_back_img_des"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                app:tint="@android:color/white" />
+
+            <ImageView
+                android:id="@+id/player_loading_go_back"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:background="@drawable/video_tap_button_always_white"
+                android:clickable="true"
+                android:contentDescription="@string/go_back_img_des"
+                android:focusable="true" />
+        </FrameLayout>
+    </FrameLayout>
+
+   <!-- <FrameLayout
+        android:id="@+id/player_torrent_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/video_torrent_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="start"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="78% at 18kb/s" />
+
+        <TextView
+            android:id="@+id/video_torrent_seeders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:gravity="start"
+            android:textColor="@color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/player_video_title"
+            tools:text="17 seeders" />
+    </FrameLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+### SOURCE PATH: app/src/main/res/layout/fragment_player_tv.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="horizontal"
+    app:backgroundTint="@android:color/black"
+    app:surface_type="texture_view">
+    <!--
+          app:fastforward_increment="10000"
+            app:rewind_increment="10000"-->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="false"
+        app:auto_show="true"
+        app:controller_layout_id="@layout/player_custom_layout_tv"
+        app:hide_on_touch="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:show_timeout="0" />
+
+    <FrameLayout
+        android:id="@+id/player_loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:backgroundTint="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/overlay_loading_skip_button"
+            style="@style/VideoButtonTV"
+
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="70dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:nextFocusLeft="@id/player_loading_go_back"
+            android:nextFocusUp="@id/player_loading_go_back"
+            android:text="@string/skip_loading"
+
+            android:visibility="gone"
+            app:icon="@drawable/ic_baseline_skip_next_24"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/main_load"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center" />
+
+        <FrameLayout
+            android:id="@+id/video_go_back_holder_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                app:tint="@android:color/white" />
+
+            <ImageView
+                android:tag="@string/tv_no_focus_tag"
+                android:id="@+id/player_loading_go_back"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center"
+                android:background="@drawable/video_tap_button_always_white"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:nextFocusRight="@id/overlay_loading_skip_button"
+                android:nextFocusDown="@id/overlay_loading_skip_button" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <!--<FrameLayout
+        android:id="@+id/player_torrent_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/video_torrent_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="start"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="78% at 18kb/s" />
+
+        <TextView
+            android:id="@+id/video_torrent_seeders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:gravity="start"
+            android:textColor="@color/white"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/player_video_title"
+            tools:text="17 seeders" />
+    </FrameLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+### SOURCE PATH: app/src/main/res/layout/player_custom_layout.xml
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_holder"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/player_metadata_scrim"
+        android:layout_width="640dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-10dp"
+        android:background="@drawable/bg_player_metadata_scrim_netflix"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/player_metadata_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="64dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="32dp">
+
+            <!-- TITLE / LOGO -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="88dp">
+
+                <ImageView
+                    android:id="@+id/player_movie_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+
+                <TextView
+                    android:id="@+id/player_movie_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    tools:text="Zootopia 2"/>
+            </FrameLayout>
+
+            <!-- GENRES / YEAR / RATING -->
+            <TextView
+                android:id="@+id/player_movie_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="#B3FFFFFF"
+                android:textSize="14sp"
+                android:maxLines="2"
+                tools:text="Animation • Action • Adventure • 2025 • ⭐ 7.6"/>
+
+            <!-- SYNOPSIS -->
+            <TextView
+                android:id="@+id/player_movie_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="#E6FFFFFF"
+                android:textSize="16sp"
+                android:lineSpacingExtra="8dp"
+                android:maxLines="5"
+                tools:text="Brave rabbit cop Judy Hopps and her friend, the fox Nick Wilde, team up again to crack a new case."/>
+
+        </LinearLayout>
+    </FrameLayout>
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/video_outline"
+        android:src="@drawable/video_outline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ImageView>
+
+
+    <!--
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:gravity="end"
+                      android:id="@+id/video_lock_holder"
+        >
+
+            <FrameLayout
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="UselessParent">
+                <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_margin="20dp"
+                        android:id="@+id/video_locked_img"
+                        android:layout_gravity="end|center_vertical"
+                        android:src="@drawable/video_locked">
+                </ImageView>
+                <ImageView
+                        android:id="@+id/video_lock"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:focusable="true"
+                        android:clickable="true"
+                        android:background="@drawable/video_tap_button_always_white">
+                </ImageView>
+
+            </FrameLayout>
+
+    </LinearLayout>
+-->
+    <FrameLayout
+        android:id="@+id/piphide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <View
+            android:id="@+id/shadow_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_overlay" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/player_center_menu"
+            app:layout_constraintTop_toBottomOf="@+id/topMenuRight">
+
+            <TextView
+                android:id="@+id/player_time_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:shadowColor="@android:color/black"
+                android:shadowRadius="10.0"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                tools:text="+100" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/player_episode_filler_holder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="20dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/player_episode_filler"
+                style="@style/SmallBlackButton"
+                android:text="@string/filler" />
+        </FrameLayout>
+
+
+        <!-- atm this is useless, however it might be used for PIP one day? -->
+        <ImageView
+            android:id="@+id/player_fullscreen"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="20dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/baseline_fullscreen_24"
+            android:visibility="gone"
+            app:tint="@color/white" />
+
+        <FrameLayout
+            android:id="@+id/player_intro_play"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/player_open_source"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:importantForAccessibility="no"
+            android:visibility="gone" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/player_video_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <FrameLayout
+                android:id="@+id/player_top_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="80dp"
+                    android:layout_marginEnd="80dp"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:paddingTop="20dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/player_video_title_rez"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2.5dp"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        tools:text="1920x1080" />
+
+
+                    <TextView
+                        android:id="@+id/player_video_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_marginBottom="2.5dp"
+                        android:textColor="@color/white"
+                        android:visibility="gone"
+                        tools:text="HEVC" />
+
+                    <LinearLayout
+                        android:id="@+id/player_video_title_holder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+                        <TextView
+                            android:maxLines="2"
+                            android:id="@+id/player_video_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:visibility="visible"
+                            tools:text="Hello world " />
+                        <ImageView
+                            android:id="@+id/offline_pin"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_marginStart="2dp"
+                            android:src="@drawable/ic_offline_pin_24"
+                            android:visibility="gone"
+                            tools:visibility="visible"
+                            android:layout_gravity="center"/>
+                    </LinearLayout>
+
+                    <TextClock
+                        android:id="@+id/player_video_clock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:gravity="end"
+                        android:visibility="gone"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Removed as it has no use anymore-->
+                <!--<androidx.mediarouter.app.MediaRouteButton
+                        android:id="@+id/player_media_route_button"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="5dp"
+                        android:mediaRouteTypes="user"
+                        android:visibility="visible"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />-->
+
+
+
+                <LinearLayout
+                    android:id="@+id/player_go_back_holder"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_margin="5dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:id="@+id/player_go_back_root"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/player_go_back"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/go_back_img_des"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_go_back"
+                            android:nextFocusRight="@id/player_restart"
+                            android:nextFocusUp="@id/player_go_back"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:padding="20dp"
+                            android:src="@drawable/ic_baseline_arrow_back_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_go_back_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:text="@string/go_back_img_des"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/player_restart_root"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/player_restart"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/restart"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_go_back"
+                            android:nextFocusRight="@id/player_go_forward"
+                            android:nextFocusUp="@id/player_restart"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/ic_baseline_replay_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_restart_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:text="@string/restart" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/player_go_forward_root"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="80dp"
+                        android:layout_marginEnd="10dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/player_go_forward"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/next_episode"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_restart"
+                            android:nextFocusRight="@id/player_go_forward"
+                            android:nextFocusUp="@id/player_go_forward"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/ic_baseline_skip_next_rounded_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_go_forward_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:text="@string/next_episode" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </FrameLayout>
+
+            <!--use for thinner app:trackThickness="3dp" com.google.android.material.progressindicator.CircularProgressIndicator-->
+            <ProgressBar
+                android:id="@+id/player_buffering"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+
+
+            <!-- This nested layout is necessary because of buffering and clicking-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/player_center_menu"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layoutDirection="ltr"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/player_rew_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/player_ffwd_holder"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5">
+
+                    <TextView
+                        android:id="@+id/exo_rew_text"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <ImageButton
+                        android:id="@+id/player_rew"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+
+                        android:background="@drawable/video_tap_button_skip"
+                        android:nextFocusLeft="@id/player_rew"
+                        android:nextFocusUp="@id/player_go_back"
+                        android:nextFocusDown="@id/player_lock"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:scaleX="-1"
+                        android:src="@drawable/netflix_skip_forward"
+                        android:tintMode="src_in"
+                        app:tint="@color/white"
+                        tools:ignore="ContentDescription" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/player_pause_play_holder_holder"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/player_pause_play"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/video_tap_button"
+                        android:nextFocusLeft="@id/player_rew"
+
+                        android:nextFocusRight="@id/player_ffwd"
+
+                        android:nextFocusUp="@id/player_go_back"
+                        android:nextFocusDown="@id/player_lock"
+
+                        android:src="@drawable/netflix_pause"
+                        app:tint="@color/white"
+                        tools:ignore="ContentDescription" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/player_ffwd_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/player_rew_holder"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5">
+
+                    <TextView
+                        android:id="@+id/exo_ffwd_text"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <ImageButton
+                        android:id="@+id/player_ffwd"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+
+                        android:background="@drawable/video_tap_button_skip"
+                        android:nextFocusRight="@id/player_rew"
+                        android:nextFocusUp="@id/player_go_back"
+                        android:nextFocusDown="@id/player_lock"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/netflix_skip_forward"
+                        android:tintMode="src_in"
+                        app:tint="@color/white"
+                        tools:ignore="ContentDescription" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/download_both_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/download_header_toggle"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:layout_marginStart="60dp"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:padding="10dp"
+                            android:src="@drawable/baseline_downloading_24"
+                            app:tint="@color/white">
+
+                        </ImageView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/download_header"
+                            android:layout_width="200dp"
+                            android:layout_height="80dp"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_margin="10dp"
+                            android:elevation="10dp"
+                            app:cardBackgroundColor="@color/darkBar"
+                            app:cardCornerRadius="@dimen/rounded_image_radius">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:gravity="end|center_vertical"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/download_header_toggle_text"
+                                    style="@style/ResultMarqueeButtonText"
+                                    android:layout_marginTop="5dp"
+                                    android:text="@string/torrent_singular"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    android:id="@+id/downloaded_progress_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/white"
+                                    tools:text="10MB / 20MB" />
+
+                                <TextView
+                                    android:id="@+id/downloaded_progress_speed_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/white"
+                                    tools:text="10MB/s - 12 seeders" />
+
+                                <com.google.android.material.progressindicator.LinearProgressIndicator
+                                    android:id="@+id/downloaded_progress"
+                                    style="@style/RoundProgressbar"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:indeterminate="false"
+                                    android:indeterminateTint="?attr/colorPrimary"
+                                    android:progressBackgroundTint="?attr/colorPrimary"
+                                    android:progressTint="?attr/colorPrimary"
+                                    tools:progress="20" />
+
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+                    </FrameLayout>
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/skip_chapter_button"
+                style="@style/NiceButton"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="100dp"
+                android:backgroundTint="@color/skipOpTransparent"
+                android:maxLines="1"
+                android:padding="10dp"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                app:cornerRadius="@dimen/rounded_button_radius"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/player_top_holder"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp"
+                tools:text="Skip Opening"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageButton
+                    android:id="@id/exo_prev"
+                    style="@style/ExoMediaButton.Previous"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+
+                <ImageButton
+                    android:id="@id/exo_repeat_toggle"
+                    style="@style/ExoMediaButton"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+
+                <ImageButton
+                    android:id="@id/exo_next"
+                    style="@style/ExoMediaButton.Next"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@id/exo_vr"
+                    style="@style/ExoMediaButton.VR"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@id/exo_play"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@id/exo_pause"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_player_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/player_video_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="ltr"
+                    android:orientation="horizontal"
+                    tools:visibility="visible">
+
+                    <TextView
+                        android:id="@id/exo_position"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="20dp"
+                        android:gravity="end|center_vertical"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="15:30" />
+
+                    <FrameLayout
+                        android:id="@+id/previewFrameLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/video_frame"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toTopOf="@+id/exo_progress"
+                        app:layout_constraintDimensionRatio="16:9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.25"
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/previewImageView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="@dimen/video_frame_width"
+                            android:importantForAccessibility="no"
+                            android:scaleType="centerCrop" />
+                    </FrameLayout>
+
+                    <com.lagradost.cloudstream3.ui.player.live.LivePreviewTimeBar
+                        android:id="@id/exo_progress"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        app:bar_height="2dp"
+                        app:layout_constraintBottom_toBottomOf="@id/exo_position"
+                        app:layout_constraintEnd_toStartOf="@id/exo_duration"
+                        app:layout_constraintStart_toEndOf="@+id/exo_position"
+                        app:played_color="?attr/colorPrimary"
+
+                        app:scrubber_color="?attr/colorPrimary"
+                        app:scrubber_dragged_size="26dp"
+                        app:scrubber_enabled_size="24dp"
+                        app:unplayed_color="@color/videoProgress" />
+
+                    <TextView
+                        android:id="@id/exo_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|center_vertical"
+
+                        android:layout_marginEnd="20dp"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="23:20" />
+
+                    <TextView
+                        android:id="@+id/time_live"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|center_vertical"
+                        android:layout_marginEnd="20dp"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        android:visibility="gone"
+                        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:text="@string/player_is_live" />
+
+                    <TextView
+                        android:id="@+id/time_left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|center_vertical"
+
+                        android:layout_marginEnd="20dp"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        android:visibility="gone"
+                        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="-23:20" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <HorizontalScrollView
+                    android:id="@+id/player_controls_scroll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_lock"
+                            style="@style/VideoButton"
+                            android:nextFocusLeft="@id/player_skip_episode"
+                            android:nextFocusRight="@id/player_resize_btt"
+                            android:text="@string/video_lock"
+                            app:icon="@drawable/video_locked"
+
+                            app:iconSize="30dp" />
+
+                        <LinearLayout
+                            android:id="@+id/player_lock_holder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_rotate_btt"
+                                style="@style/VideoButton"
+                                android:nextFocusLeft="@id/player_lock"
+
+                                android:nextFocusRight="@id/player_resize_btt"
+                                android:text="@string/rotate_video"
+                                app:icon="@drawable/screen_rotation" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_resize_btt"
+                                style="@style/VideoButton"
+                                android:nextFocusLeft="@id/player_rotate_btt"
+
+                                android:nextFocusRight="@id/player_speed_btt"
+                                android:text="@string/video_aspect_ratio_resize"
+                                app:icon="@drawable/ic_baseline_aspect_ratio_24" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_speed_btt"
+                                style="@style/VideoButton"
+                                android:nextFocusLeft="@id/player_resize_btt"
+
+                                android:nextFocusRight="@id/player_subtitle_offset_btt"
+                                app:icon="@drawable/ic_baseline_speed_24"
+                                tools:text="Speed" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_subtitle_offset_btt"
+                                style="@style/VideoButton"
+                                android:nextFocusLeft="@id/player_speed_btt"
+                                android:nextFocusRight="@id/player_sources_btt"
+                                android:text="@string/subtitle_offset"
+
+                                android:visibility="gone"
+                                app:icon="@drawable/ic_outline_subtitles_24"
+                                tools:visibility="visible" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_sources_btt"
+                                style="@style/VideoButton"
+                                android:layout_height="40dp"
+
+                                android:nextFocusLeft="@id/player_subtitle_offset_btt"
+                                android:nextFocusRight="@id/player_tracks_btt"
+                                android:text="@string/video_source"
+                                app:icon="@drawable/ic_baseline_playlist_play_24" />
+
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_tracks_btt"
+                                style="@style/VideoButton"
+                                android:layout_height="40dp"
+
+                                android:nextFocusLeft="@id/player_sources_btt"
+                                android:nextFocusRight="@id/player_compressor_btt"
+                                android:text="@string/tracks"
+                                app:icon="@drawable/ic_baseline_equalizer_24" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_compressor_btt"
+                                style="@style/VideoButton"
+                                android:layout_height="40dp"
+                                android:nextFocusLeft="@id/player_tracks_btt"
+                                android:nextFocusRight="@id/player_skip_op"
+                                android:text="@string/compressor"
+                                app:icon="@drawable/ic_compressor_24" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_skip_op"
+                                style="@style/VideoButton"
+                                android:nextFocusLeft="@id/player_sources_btt"
+
+                                android:nextFocusRight="@id/player_skip_episode"
+                                android:text="@string/video_skip_op"
+                                app:icon="@drawable/ic_baseline_fast_forward_24" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_skip_episode"
+                                style="@style/VideoButton"
+                                android:nextFocusLeft="@id/player_skip_op"
+                                android:nextFocusRight="@id/player_lock"
+                                android:text="@string/next_episode"
+                                app:icon="@drawable/ic_baseline_skip_next_24" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:id="@+id/player_progressbar_left_holder"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="start"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/centerMenuView"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:alpha="1"
+                tools:visibility="visible">
+
+                <!-- VERY hacky layout -->
+                <ImageView
+                    android:id="@+id/player_progressbar_left_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="220dp"
+                    android:src="@drawable/ic_baseline_volume_up_24"
+                    app:tint="@android:color/white"
+                    tools:ignore="ContentDescription" />
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_left_level1"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginStart="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/white"
+                    android:progressTintMode="src_in"
+                    tools:progress="30"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal" />
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_left_level2"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginStart="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/colorPrimaryOrange"
+                    android:progressTintMode="src_in"
+                    tools:progress="0"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/player_progressbar_right_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/centerMenuView"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:alpha="1"
+                tools:ignore="RtlHardcoded"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/player_progressbar_right_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="220dp"
+                    android:src="@drawable/ic_baseline_brightness_7_24"
+                    app:tint="@android:color/white"
+                    tools:ignore="ContentDescription">
+
+                </ImageView>
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_right_level1"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/white"
+                    android:progressTintMode="src_in" />
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_right_level2"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/colorPrimaryOrange"
+                    android:progressTintMode="src_in" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/subtitle_holder"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/player_speedup_button"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        app:iconPadding="0dp"
+        app:iconGravity="textStart"
+        android:clickable="false"
+        android:focusable="false"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        app:icon="@drawable/speedup"
+        app:iconTint="@color/textColor"
+        android:foreground="@null"
+        android:backgroundTint="@color/skipOpTransparent"
+        tools:visibility="visible" />
+    <LinearLayout
+        android:id="@+id/player_episodes_button_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="end|center_vertical"
+        >
+        <ImageView
+            android:padding="15dp"
+            android:id="@+id/player_episodes_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_baseline_arrow_back_ios_24"
+            android:background="@drawable/video_tap_button_always_white"
+            app:tint="@android:color/white"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/player_episodes_button_text"
+            style="@style/ResultMarqueeButtonText"
+            android:layout_marginTop="5dp"
+            android:text="@string/episodes"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/player_episode_overlay"
+        android:visibility="gone"
+        android:padding="5dp"
+        android:background="?attr/primaryBlackBackground"
+        android:orientation="vertical"
+        android:layout_gravity="end"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/player_episode_overlay_title"
+            android:padding="10dp"
+            style="@style/WatchHeaderText"
+            android:textSize="15sp"
+            android:layout_marginEnd="0dp"
+            android:text="@string/episodes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:requiresFadingEdge="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:id="@+id/player_episode_list"
+            tools:listitem="@layout/player_episodes"
+            android:nextFocusLeft="@id/player_episodes_button"
+            android:layout_width="350dp"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:descendantFocusability="afterDescendants">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
+</FrameLayout>
+
+
+
+### SOURCE PATH: app/src/main/res/layout/player_custom_layout_tv.xml
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_holder"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:tag="television"
+    tools:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/player_metadata_scrim"
+        android:layout_width="680dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-10dp"
+        android:background="@drawable/bg_player_metadata_scrim_netflix"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/player_metadata_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingStart="64dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="32dp">
+
+            <!-- TITLE / LOGO -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="88dp">
+
+                <ImageView
+                    android:id="@+id/player_movie_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/player_movie_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="4"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    tools:text="Zootopia 2" />
+            </FrameLayout>
+
+            <!-- GENRES / YEAR / RATING -->
+            <TextView
+                android:id="@+id/player_movie_meta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:maxLines="2"
+                android:textColor="#B3FFFFFF"
+                android:textSize="14sp"
+                tools:text="Animation • Action • Adventure • 2025 • ⭐ 7.6" />
+
+            <!-- SYNOPSIS -->
+            <TextView
+                android:id="@+id/player_movie_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:lineSpacingExtra="8dp"
+                android:maxLines="5"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:textColor="#E6FFFFFF"
+                android:textSize="16sp"
+                tools:text="Brave rabbit cop Judy Hopps..." />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/video_outline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/video_outline"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/piphide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/shadow_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/player_gradient_tv" />
+        <!--
+            <LinearLayout android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:gravity="end"
+                          android:id="@+id/video_lock_holder"
+            >
+
+                <FrameLayout
+                        android:layout_margin="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UselessParent">
+                    <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_margin="20dp"
+                            android:id="@+id/video_locked_img"
+                            android:layout_gravity="end|center_vertical"
+                            android:src="@drawable/video_locked">
+                    </ImageView>
+                    <ImageView
+                            android:id="@+id/video_lock"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:layout_gravity="end|center_vertical"
+                            android:focusable="true"
+                            android:clickable="true"
+                            android:background="@drawable/video_tap_button_always_white">
+                    </ImageView>
+
+                </FrameLayout>
+
+        </LinearLayout>
+    -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:id="@+id/player_progressbar_left_holder"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="start"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/centerMenuView"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:alpha="1"
+                tools:visibility="visible">
+                <!--VERY hacky layout -->
+                <ImageView
+                    android:id="@+id/player_progressbar_left_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="220dp"
+                    android:src="@drawable/ic_baseline_volume_up_24"
+                    app:tint="@android:color/white"
+                    tools:ignore="ContentDescription">
+
+                </ImageView>
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_left_level1"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginStart="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/white"
+                    android:progressTintMode="src_in"
+                    tools:progress="30" />
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_left_level2"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginStart="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/colorPrimaryOrange"
+                    android:progressTintMode="src_in"
+                    tools:progress="0" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/player_progressbar_right_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/centerMenuView"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:alpha="1"
+                tools:ignore="RtlHardcoded"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/player_progressbar_right_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="220dp"
+                    android:src="@drawable/ic_baseline_brightness_7_24"
+                    app:tint="@android:color/white"
+                    tools:ignore="ContentDescription">
+
+                </ImageView>
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_right_level1"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/white"
+                    android:progressTintMode="src_in" />
+
+                <ProgressBar
+                    android:id="@+id/player_progressbar_right_level2"
+                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                    android:layout_width="5dp"
+                    android:layout_height="150dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="40dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progress_drawable_vertical"
+                    android:progressTint="@color/colorPrimaryOrange"
+                    android:progressTintMode="src_in" />
+            </RelativeLayout>
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/player_time_text"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="10.0"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            android:visibility="gone"
+            tools:text="+100"
+            tools:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/player_pause_play_holder_holder"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/player_intro_play"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/player_open_source"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:importantForAccessibility="no"
+            android:visibility="gone" />
+
+        <!-- atm this is useless, however it might be used for PIP one day? -->
+        <ImageView
+            android:id="@+id/player_fullscreen"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="20dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/baseline_fullscreen_24"
+            android:visibility="gone"
+            app:tint="@color/white" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/player_video_holder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/skip_chapter_button"
+                style="@style/VideoButtonTV"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="100dp"
+                android:maxLines="1"
+                android:nextFocusLeft="@id/player_pause_play"
+                android:nextFocusUp="@id/player_restart"
+                android:nextFocusDown="@id/player_pause_play"
+                android:textSize="15sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/bottom_player_bar"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Skip Opening"
+                tools:visibility="visible" />
+
+            <FrameLayout
+                android:id="@+id/player_top_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="32dp"
+                    android:orientation="vertical">
+
+                    <TextClock
+                            android:id="@+id/player_video_clock"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:gravity="end"
+                            android:maxWidth="600dp"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:visibility="visible"
+                            android:format12Hour="hh:mm a"
+                            android:format24Hour="HH:mm"
+                            android:fontFamily="@font/google_sans"
+                            android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/player_video_title_holder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end">
+
+                        <TextView
+                            android:id="@+id/player_video_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end"
+                            android:gravity="end"
+                            android:maxWidth="600dp"
+                            android:maxLines="2"
+                            android:textAlignment="viewEnd"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:text="Hello world" />
+
+                        <ImageView
+                            android:id="@+id/offline_pin"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="start"
+                            android:layout_marginStart="2dp"
+                            android:src="@drawable/ic_offline_pin_24"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/player_video_title_rez"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:gravity="end"
+                        android:maxWidth="600dp"
+                        android:textAlignment="viewEnd"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        tools:text="1920x1080" />
+
+                    <TextView
+                        android:id="@+id/player_video_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginBottom="2.5dp"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        tools:text="HEVC • English • 5.1 • E-AC3" />
+
+
+                    <FrameLayout
+                        android:id="@+id/player_episode_filler_holder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="2dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_episode_filler"
+                            style="@style/SmallBlackButton"
+                            android:text="@string/filler" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <!-- Removed as it has no use anymore-->
+                <!--<androidx.mediarouter.app.MediaRouteButton
+                        android:id="@+id/player_media_route_button"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="end"
+                        android:layout_margin="5dp"
+                        android:mediaRouteTypes="user"
+                        android:visibility="visible"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />-->
+
+                <LinearLayout
+                    android:id="@+id/player_go_back_holder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:id="@+id/player_go_back_root"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/player_go_back"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/go_back_img_des"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_go_back"
+                            android:nextFocusRight="@id/player_restart"
+                            android:nextFocusUp="@id/player_go_back"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/ic_baseline_arrow_back_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_go_back_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/go_back_img_des"
+                            android:visibility="invisible"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/player_restart_root"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/player_restart"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/restart"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_go_back"
+                            android:nextFocusRight="@id/player_go_forward"
+                            android:nextFocusUp="@id/player_restart"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/ic_baseline_replay_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_restart_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/restart"
+                            android:visibility="invisible"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/player_go_forward_root"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/player_go_forward"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/next_episode"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_restart"
+                            android:nextFocusRight="@id/download_header_toggle"
+                            android:nextFocusUp="@id/player_go_forward"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/ic_baseline_skip_next_rounded_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_go_forward_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/next_episode"
+                            android:visibility="invisible"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/download_both_header"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/download_header_toggle"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/torrent_singular"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/player_go_forward"
+                            android:nextFocusRight="@id/player_episodes_button"
+                            android:nextFocusUp="@id/download_header_toggle"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/baseline_downloading_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/download_header_toggle_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/torrent_singular"
+                            android:visibility="invisible"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/player_episodes_button_root"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/player_episodes_button"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/video_tap_button_always_white"
+                            android:clickable="true"
+                            android:contentDescription="@string/episodes"
+                            android:focusable="true"
+                            android:nextFocusLeft="@id/download_header_toggle"
+                            android:nextFocusRight="@id/player_episode_overlay"
+                            android:nextFocusUp="@id/player_episodes_button"
+                            android:nextFocusDown="@id/player_pause_play"
+                            android:src="@drawable/ic_baseline_sort_24"
+                            android:tag="@string/tv_no_focus_tag"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/player_episodes_button_text"
+                            style="@style/ResultMarqueeButtonText"
+                            android:layout_marginTop="5dp"
+                            android:text="@string/episodes"
+                            android:visibility="invisible"
+                            tools:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/download_header"
+                        android:layout_width="200dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginTop="5dp"
+                        android:elevation="10dp"
+                        app:cardBackgroundColor="@color/darkBar"
+                        app:cardCornerRadius="@dimen/rounded_image_radius">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="10dp"
+                            android:gravity="end|center_vertical"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/downloaded_progress_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                tools:text="10MB / 20MB" />
+
+                            <TextView
+                                android:id="@+id/downloaded_progress_speed_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                tools:text="10MB/s - 12 seeders" />
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/downloaded_progress"
+                                style="@style/RoundProgressbar"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:indeterminate="false"
+                                android:indeterminateTint="?attr/colorPrimary"
+                                android:progressBackgroundTint="?attr/colorPrimary"
+                                android:progressTint="?attr/colorPrimary"
+                                tools:progress="20" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+            </FrameLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/player_center_menu"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layoutDirection="ltr"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
+
+                <FrameLayout
+                    android:id="@+id/player_rew_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/player_ffwd_holder"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5">
+
+                    <TextView
+                        android:id="@+id/exo_rew_text"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <ImageButton
+                        android:id="@id/player_rew"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+
+                        android:background="@drawable/video_tap_button_skip"
+                        android:nextFocusLeft="@id/player_rew"
+                        android:nextFocusUp="@id/player_go_back"
+                        android:nextFocusDown="@id/player_pause_play"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:scaleX="-1"
+                        android:src="@drawable/netflix_skip_forward"
+                        android:tintMode="src_in"
+                        app:tint="@color/white"
+                        tools:ignore="ContentDescription" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/player_ffwd_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/player_rew_holder"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.5">
+
+                    <TextView
+                        android:id="@+id/exo_ffwd_text"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        tools:text="10" />
+
+                    <ImageButton
+                        android:id="@id/player_ffwd"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+
+                        android:background="@drawable/video_tap_button_skip"
+                        android:nextFocusRight="@id/player_rew"
+                        android:nextFocusUp="@id/player_go_back"
+                        android:nextFocusDown="@id/player_pause_play"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/netflix_skip_forward"
+                        android:tintMode="src_in"
+                        app:tint="@color/white"
+                        tools:ignore="ContentDescription" />
+                </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!--use for thinner app:trackThickness="3dp" com.google.android.material.progressindicator.CircularProgressIndicator-->
+            <ProgressBar
+                android:id="@+id/player_buffering"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageButton
+                    android:id="@id/exo_prev"
+                    style="@style/ExoMediaButton.Previous"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+
+                <ImageButton
+                    android:id="@id/exo_repeat_toggle"
+                    style="@style/ExoMediaButton"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+
+                <ImageButton
+                    android:id="@id/exo_next"
+                    style="@style/ExoMediaButton.Next"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@id/exo_vr"
+                    style="@style/ExoMediaButton.VR"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@id/exo_play"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+
+                <ImageButton
+                    android:id="@id/exo_pause"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:tintMode="src_in"
+                    app:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bottom_player_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="64dp"
+                android:layout_marginEnd="64dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/player_video_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layoutDirection="ltr"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/player_pause_play"
+
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="20dp"
+                        android:background="@drawable/video_tap_button"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:nextFocusUp="@id/skip_chapter_button"
+                        android:nextFocusDown="@id/player_lock_holder"
+                        android:src="@drawable/netflix_pause"
+
+                        android:tag="@string/tv_no_focus_tag"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:tint="@color/player_button_tv"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@id/exo_position"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/player_pause_play"
+                        tools:text="15:30" />
+
+                    <FrameLayout
+                        android:id="@+id/previewFrameLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/video_frame"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toTopOf="@+id/exo_progress"
+                        app:layout_constraintDimensionRatio="16:9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintWidth_default="percent"
+                        app:layout_constraintWidth_percent="0.25"
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/previewImageView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="@dimen/video_frame_width"
+                            android:importantForAccessibility="no"
+                            android:scaleType="centerCrop" />
+                    </FrameLayout>
+
+                    <com.lagradost.cloudstream3.ui.player.live.LivePreviewTimeBar
+                        android:id="@id/exo_progress"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        app:bar_height="2dp"
+                        app:layout_constraintBottom_toBottomOf="@id/exo_position"
+                        app:layout_constraintEnd_toStartOf="@id/exo_duration"
+                        app:layout_constraintStart_toEndOf="@+id/exo_position"
+                        app:played_color="?attr/colorPrimary"
+
+                        app:scrubber_color="?attr/colorPrimary"
+                        app:scrubber_dragged_size="26dp"
+                        app:scrubber_enabled_size="24dp"
+                        app:unplayed_color="@color/videoProgress" />
+
+                    <TextView
+                        android:id="@id/exo_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|center_vertical"
+
+                        android:layout_marginEnd="20dp"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="23:20" />
+
+                    <TextView
+                        android:id="@+id/time_live"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|center_vertical"
+                        android:layout_marginEnd="20dp"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:text="@string/player_is_live"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        android:visibility="gone"
+                        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/time_left"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|center_vertical"
+
+                        android:layout_marginEnd="20dp"
+                        android:includeFontPadding="false"
+                        android:minWidth="50dp"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:textStyle="normal"
+                        android:visibility="gone"
+                        app:layout_constraintBaseline_toBaselineOf="@id/exo_position"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="-23:20" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <HorizontalScrollView
+                    android:id="@+id/player_controls_scroll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <LinearLayout
+                        android:id="@+id/player_lock_holder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:visibility="gone">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/player_lock"
+                                style="@style/VideoButtonTV"
+                                android:nextFocusLeft="@id/player_skip_episode"
+
+                                android:nextFocusRight="@id/player_resize_btt"
+                                android:nextFocusUp="@id/player_pause_play"
+                                android:text="@string/video_lock"
+                                android:visibility="gone"
+                                app:icon="@drawable/video_locked" />
+                        </FrameLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_rotate_btt"
+                            style="@style/VideoButton"
+                            android:visibility="gone" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_skip_op"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_pause_play"
+                            android:nextFocusRight="@id/player_skip_episode"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_skip_episode"
+                            android:text="@string/video_skip_op"
+                            app:icon="@drawable/ic_baseline_fast_forward_24" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_skip_episode"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_skip_op"
+                            android:nextFocusRight="@id/player_resize_btt"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_resize_btt"
+                            android:text="@string/next_episode"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_baseline_skip_next_24"
+                            tools:visibility="visible" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_resize_btt"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_skip_episode"
+
+                            android:nextFocusRight="@id/player_speed_btt"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_speed_btt"
+                            android:text="@string/video_aspect_ratio_resize"
+                            app:icon="@drawable/ic_baseline_aspect_ratio_24" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_speed_btt"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_resize_btt"
+
+                            android:nextFocusRight="@id/player_subtitle_offset_btt"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_subtitle_offset_btt"
+                            app:icon="@drawable/ic_baseline_speed_24"
+                            tools:text="Speed" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_subtitle_offset_btt"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_speed_btt"
+                            android:nextFocusRight="@id/player_sources_btt"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_sources_btt"
+                            android:text="@string/subtitle_offset"
+
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_outline_subtitles_24"
+                            tools:visibility="visible" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_sources_btt"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_subtitle_offset_btt"
+                            android:nextFocusRight="@id/player_tracks_btt"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_tracks_btt"
+
+                            android:text="@string/video_source"
+                            app:icon="@drawable/ic_baseline_playlist_play_24" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_tracks_btt"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_sources_btt"
+                            android:nextFocusRight="@id/player_compressor_btt"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_compressor_btt"
+                            android:text="@string/tracks"
+                            app:icon="@drawable/ic_baseline_equalizer_24" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/player_compressor_btt"
+                            style="@style/VideoButtonTV"
+                            android:nextFocusLeft="@id/player_tracks_btt"
+                            android:nextFocusRight="@id/player_skip_op"
+                            android:nextFocusUp="@id/player_pause_play"
+                            android:nextFocusDown="@id/player_skip_op"
+                            android:text="@string/compressor"
+                            app:icon="@drawable/ic_compressor_24" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/subtitle_holder"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/player_speedup_button"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="70dp"
+        android:clickable="false"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        app:icon="@drawable/speedup"
+        app:iconGravity="top"
+        app:iconTint="@color/textColor"
+        app:rippleColor="?attr/colorPrimary"
+        tools:visibility="visible" />
+
+
+    <LinearLayout
+        android:id="@+id/player_episode_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="?attr/primaryBlackBackground"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/player_episode_overlay_title"
+            style="@style/WatchHeaderText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:padding="10dp"
+            android:text="@string/episodes"
+            android:textSize="15sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/player_episode_list"
+            android:layout_width="400dp"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:descendantFocusability="afterDescendants"
+            android:nextFocusLeft="@id/player_episodes_button"
+            android:requiresFadingEdge="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/player_episodes">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
+
+</FrameLayout>
+
+
+
+### SOURCE PATH: app/src/main/res/values/strings.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<!--https://newbedev.com/concatenate-multiple-strings-in-xml--><resources>
+    <!-- FORMAT MIGHT TRANSLATE, WILL CAUSE CRASH IF APPLIED WRONG -->
+    <string name="app_dub_sub_episode_text_format" formatted="true">%1$s Ep %2$d</string>
+    <string name="cast_format" formatted="true">Cast: %s</string>
+    <string name="next_episode_format" formatted="true">Episode %d will be released in</string>
+    <string name="next_season_episode_format" formatted="true">Season %1$d Episode %2$d will be released in</string>
+    <string name="next_episode_time_day_format" formatted="true">%1$dd %2$dh %3$dm</string>
+    <string name="next_episode_time_hour_format" formatted="true">%1$dh %2$dm</string>
+    <string name="next_episode_time_min_format" formatted="true">%dm</string>
+    <string name="download_time_left_hour_min_sec_format" formatted="true">%1$dh %2$dm %3$ds</string>
+    <string name="download_time_left_min_sec_format" formatted="true">%1$dm %2$ds</string>
+    <string name="download_time_left_sec_format" formatted="true">%1$ds</string>
+    <!-- IS NOT NEEDED TO TRANSLATE AS THEY ARE ONLY USED FOR SCREEN READERS AND WONT SHOW UP TO NORMAL USERS -->
+    <string name="result_poster_img_des">Poster</string>
+    <string name="search_poster_img_des">Poster</string>
+    <string name="episode_poster_img_des">Episode Poster</string>
+    <string name="home_main_poster_img_des">Main Poster</string>
+    <string name="home_next_random_img_des">Next Random</string>
+    <string name="go_back_img_des">Go back</string>
+    <string name="play_from_beginning_img_des">Play from the Beginning</string>
+    <string name="home_change_provider_img_des">Change Provider</string>
+    <string name="preview_background_img_des">Preview Background</string>
+    <!-- TRANSLATE, BUT DON'T FORGET FORMAT -->
+    <string name="player_speed_text_format" formatted="true">Speed (%.2fx)</string>
+    <string name="rated_format" formatted="true">Rated: %.1f</string>
+    <string name="new_update_format" formatted="true">New update found!\n%1$s -&gt; %2$s</string>
+    <string name="filler" formatted="true">Filler</string>
+    <string name="duration_format" formatted="true">%d min</string>
+    <string name="app_name">CloudStream</string>
+    <string name="play_with_app_name">Play with CloudStream</string>
+    <string name="title_home">Home</string>
+    <string name="title_search">Search</string>
+    <string name="title_downloads">Downloads</string>
+    <string name="download_queue">Download queue</string>
+    <string name="title_settings">Settings</string>
+    <string name="search_hint">Search…</string>
+    <string name="search_hint_site" formatted="true">Search %s…</string>
+    <string name="speech_recognition_unavailable">Speech recognition is not available</string>
+    <string name="begin_speaking">Begin Speaking…</string>
+    <string name="no_data">No Data</string>
+    <string name="episode_more_options_des">More Options</string>
+    <string name="next_episode">Next episode</string>
+    <string name="result_tags">Genres</string>
+    <string name="result_share">Share</string>
+    <string name="result_open_in_browser">Open In Browser</string>
+    <string name="browser">Browser</string>
+    <string name="skip_loading">Skip Loading</string>
+    <string name="loading">Loading…</string>
+    <string name="type_watching">Watching</string>
+    <string name="type_on_hold">On-Hold</string>
+    <string name="type_completed">Completed</string>
+    <string name="type_dropped">Dropped</string>
+    <string name="type_plan_to_watch">Plan to Watch</string>
+    <string name="type_re_watching">Rewatching</string>
+    <string name="play_movie_button">Play Movie</string>
+    <string name="play_trailer_button">Play Trailer</string>
+    <string name="play_livestream_button">Play Livestream</string>
+    <string name="play_torrent_button">Stream Torrent</string>
+    <string name="play_full_series_button">Play Full Series</string>
+    <string name="torrent_info">This video is a Torrent, this means that your video activity can be tracked.\nMake sure you understand Torrenting before continuing.</string>
+    <string name="pick_source">Sources</string>
+    <string name="pick_subtitle">Subtitles</string>
+    <string name="reload_error">Retry connection…</string>
+    <string name="go_back">Go Back</string>
+    <string name="play_episode">Play Episode</string>
+    <!--<string name="need_storage">Allow to download episodes</string>-->
+    <string name="download">Download</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="downloading">Downloading</string>
+    <string name="download_paused">Download Paused</string>
+    <string name="download_started">Download Started</string>
+    <string name="download_failed">Download Failed</string>
+    <string name="download_canceled">Download Canceled</string>
+    <string name="download_done">Download Done</string>
+    <string name="downloads_delete_select">Select Items to Delete</string>
+    <string name="downloads_empty">There are currently no downloads.</string>
+    <string name="queue_empty_message">There are currently no queued downloads.</string>
+    <string name="offline_file">Available for watching offline</string>
+    <string name="select_all">Select All</string>
+    <string name="deselect_all">Deselect All</string>
+    <string name="update_started">Update Started</string>
+    <string name="stream">Network stream</string>
+    <string name="open_local_video">Open local video</string>
+    <string name="error_loading_links_toast">Error Loading Links</string>
+    <string name="links_reloaded_toast">Links Reloaded</string>
+    <string name="download_storage_text">Internal Storage</string>
+    <string name="app_dubbed_text">Dub</string>
+    <string name="app_subbed_text">Sub</string>
+    <string name="popup_delete_file">Delete File</string>
+    <string name="popup_play_file">Play File</string>
+    <string name="popup_resume_download">Resume Download</string>
+    <string name="popup_pause_download">Pause Download</string>
+    <string name="home_more_info">More info</string>
+    <string name="home_expanded_hide">Hide</string>
+    <string name="home_play">Play</string>
+    <string name="home_info">Info</string>
+    <string name="filter_bookmarks">Filter Bookmarks</string>
+    <string name="error_bookmarks_text">Bookmarks</string>
+    <string name="action_remove_from_bookmarks">Remove</string>
+    <string name="action_add_to_bookmarks">Set watch status</string>
+    <string name="sort_apply">Apply</string>
+    <string name="sort_copy">Copy</string>
+    <string name="sort_close">Close</string>
+    <string name="sort_clear">Clear</string>
+    <string name="sort_save">Save</string>
+    <string name="repo_copy_label">Repository name and URL</string>
+    <string name="toast_copied">copied!</string>
+    <string name="subscribe_tooltip">New episode notification</string>
+    <string name="result_search_tooltip">Search in other extensions</string>
+    <string name="recommendations_tooltip">Show recommendations</string>
+    <string name="player_speed">Player Speed</string>
+    <string name="subtitles_settings">Subtitle Settings</string>
+    <string name="subs_text_color">Text Color</string>
+    <string name="subs_outline_color">Outline Color</string>
+    <string name="subs_background_color">Background Color</string>
+    <string name="subs_window_color">Window Color</string>
+    <string name="subs_edge">Edge</string>
+    <string name="subs_edge_type">Edge Type</string>
+    <string name="subs_subtitle_elevation">Subtitle Elevation</string>
+    <string name="subs_font">Font</string>
+    <string name="subs_font_size">Font Size</string>
+    <string name="search_provider_text_providers">Search using providers</string>
+    <string name="search_provider_text_types">Search using types</string>
+    <string name="benene_count_text">%d Benenes given to devs</string>
+    <string name="benene_count_text_none">No Benenes given</string>
+    <string name="subs_auto_select_language">Auto-Select Language</string>
+    <string name="subs_download_languages">Download Languages</string>
+    <string name="subs_subtitle_languages">Subtitle Language</string>
+    <string name="subs_hold_to_reset_to_default">Hold to reset to default</string>
+    <string name="subs_import_text" formatted="true">Import fonts by placing them in %s</string>
+    <string name="continue_watching">Continue Watching</string>
+    <string name="action_remove_watching">Remove</string>
+    <string name="action_open_watching">More Info</string>
+    <string name="action_open_play">@string/home_play </string>
+    <string name="vpn_might_be_needed">A VPN might be needed for this provider to work correctly</string>
+    <string name="vpn_torrent">This provider is a torrent, a VPN is recommended</string>
+    <string name="provider_info_meta">Metadata is not provided by site, video loading will fail if it does not exist on site.</string>
+    <string name="torrent_plot">Description</string>
+    <string name="normal_no_plot">No Plot Found</string>
+    <string name="torrent_no_plot">No Description Found</string>
+    <string name="show_log_cat">Show Logcat 🐈</string>
+    <string name="log_cat">Logcat 🐈</string>
+    <string name="test_log">Log</string>
+    <string name="picture_in_picture">Picture-in-picture</string>
+    <string name="picture_in_picture_des">Continues playback in a miniature player on top of other apps</string>
+    <string name="player_size_settings">Player resize button</string>
+    <string name="player_size_settings_des">Remove the black borders</string>
+    <string name="player_subtitles_settings">Subtitles</string>
+    <string name="player_subtitles_settings_des">Player subtitles settings</string>
+    <string name="chromecast_subtitles_settings">Chromecast Subtitles</string>
+    <string name="chromecast_subtitles_settings_des">Chromecast subtitles settings</string>
+    <string name="eigengraumode_settings">Playback speed</string>
+    <string name="speed_setting_summary">Adds a speed option in the player</string>
+    <string name="swipe_to_seek_settings">Swipe to seek</string>
+    <string name="swipe_to_seek_settings_des">Swipe from side to side to control your position in a video</string>
+    <string name="swipe_to_change_settings">Swipe to change settings</string>
+    <string name="swipe_to_change_settings_des">Slide up or down on the left or right side to change brightness or volume</string>
+    <string name="autoplay_next_settings">Autoplay next episode</string>
+    <string name="autoplay_next_settings_des">Start the next episode when the current one ends</string>
+    <string name="start_paused_settings">Start videos paused</string>
+    <string name="start_paused_settings_des">Reduce stress when selecting sources</string>
+    <string name="double_tap_to_seek_settings">Double tap to seek</string>
+    <string name="double_tap_to_pause_settings">Double tap to pause</string>
+    <string name="double_tap_to_seek_amount_settings">Player seek amount (Seconds)</string>
+    <string name="double_tap_to_seek_settings_des">Tap twice on the right or left side to seek forwards or backwards
+    </string>
+    <string name="double_tap_to_pause_settings_des">Tap twice in the middle to pause</string>
+    <string name="use_system_brightness_settings">Use system brightness</string>
+    <string name="use_system_brightness_settings_des">Use system brightness in the app player instead of a dark
+        overlay
+    </string>
+    <string name="extra_brightness_settings">Extra brightness</string>
+    <string name="extra_brightness_settings_des">Enable brightness filter when 100% display brightness is exceeded</string>
+    <string name="extra_brightness_key">extra_brightness_enabled</string>
+    <string name="episode_sync_settings">Update watch progress</string>
+    <string name="episode_sync_settings_des">Automatically sync your current episode progress</string>
+    <string name="restore_settings">Restore data from backup</string>
+    <string name="backup_settings">Back up data</string>
+    <string name="backup_frequency">Backup frequency</string>
+    <string name="restore_success">Loaded backup file</string>
+    <string name="restore_failed_format" formatted="true">Failed to restore data from file %s</string>
+    <string name="backup_success">Data stored</string>
+    <string name="backup_failed">Storage permissions missing. Please try again.</string>
+    <string name="backup_failed_error_format">Error backing up %s</string>
+    <string name="search">Search</string>
+    <string name="library">Library</string>
+    <string name="category_account">Accounts and Security</string>
+    <string name="category_updates">Updates and Backup</string>
+    <string name="settings_info">Info</string>
+    <string name="advanced_search">Advanced Search</string>
+    <string name="advanced_search_des">Gives you the search results separated by provider</string>
+    <string name="search_suggestions">Search Suggestions</string>
+    <string name="search_suggestions_des">Show search suggestions while typing</string>
+    <string name="clear_suggestions">Clear Suggestions</string>
+    <string name="show_fillers_settings">Show filler episode for anime</string>
+    <string name="show_player_metadata_overlay">Show Player Metadata Overlay</string>
+    <string name="show_trailers_settings">Show trailers</string>
+    <string name="kitsu_settings">Show posters from Kitsu</string>
+    <string name="show_cast_in_details">Show cast panel</string>
+    <string name="pref_filter_search_quality">Hide selected video quality in search results</string>
+    <string name="automatic_plugin_updates">Automatic plugin updates</string>
+    <string name="automatic_plugin_download">Automatically download plugins</string>
+    <string name="automatic_plugin_download_mode_title">Select mode to filter plugins download</string>
+    <string name="automatic_plugin_download_summary">Automatically install all not yet installed plugins from added repositories.</string>
+    <string name="updates_settings">Show app updates</string>
+    <string name="updates_settings_des">Automatically search for new updates after starting the app.</string>
+    <string name="redo_setup_process">Redo setup process</string>
+    <string name="install_prerelease">Install pre-release version</string>
+    <string name="prerelease_already_installed">Pre-release is already installed.</string>
+    <string name="prerelease_install_failed">Failed to install pre-release.</string>
+    <string name="apk_installer_settings">APK Installer</string>
+    <string name="apk_installer_settings_des">Some devices do not support the new package installer. Try the legacy option if updates do not install.</string>
+    <string name="github">Github</string>
+    <string name="lightnovel">Light novel app by the same devs</string>
+    <string name="anim">Anime app by the same devs</string>
+    <string name="discord">Join Discord</string>
+    <string name="benene">Give a benene to the devs</string>
+    <string name="benene_des">Given benene</string>
+    <string name="app_language">App Language</string>
+    <string name="no_chromecast_support_toast">This provider has no Chromecast support</string>
+    <string name="no_links_found_toast">No Links Found</string>
+    <string name="copy_link_toast">Link copied to clipboard</string>
+    <string name="play_episode_toast">Play Episode</string>
+    <string name="subs_default_reset_toast">Reset to default value</string>
+    <string name="season">Season</string>
+    <string name="season_format">%1$s %2$d%3$s</string>
+    <string name="no_season">No Season</string>
+    <string name="episode">Episode</string>
+    <string name="episodes">Episodes</string>
+    <string name="episodes_range">%1$d-%2$d</string>
+    <string name="episode_format" formatted="true">%1$d %2$s</string>
+    <string name="episode_upcoming_format" formatted="true">Upcoming in %s</string>
+    <string name="season_short">S</string>
+    <string name="episode_short">E</string>
+    <string name="no_episodes_found">No Episodes found</string>
+    <string name="delete">Delete</string>
+    <string name="delete_file">Delete File</string>
+    <string name="delete_files">Delete Files</string>
+    <string name="delete_format" formatted="true">Delete (%1$d | %2$s)</string>
+    <string name="cancel">Cancel</string>
+    <string name="pause">Pause</string>
+    <string name="start">Start</string>
+    <string name="test_failed">Failed</string>
+    <string name="test_passed">Passed</string>
+    <string name="test_warning">Warning</string>
+    <string name="resume">Resume</string>
+    <string name="go_back_30">-30</string>
+    <string name="go_forward_30">+30</string>
+    <string name="delete_message" formatted="true">This will permanently delete %s\nAre you sure?</string>
+    <string name="delete_message_multiple" formatted="true">Are you sure you want to permanently delete the following items?\n\n%s</string>
+    <string name="delete_message_series_episodes" formatted="true">Are you sure you want to permanently delete the following episodes in %1$s?\n\n%2$s</string>
+    <string name="delete_message_series_section" formatted="true">You will also permanently delete all episodes in the following series:\n\n%s</string>
+    <string name="delete_message_series_only" formatted="true">Are you sure you want to permanently delete all episodes in the following series?\n\n%s</string>
+    <string name="resume_time_left" formatted="true">%dm\nremaining</string>
+    <string name="resume_remaining" formatted="true">%s\nremaining</string>
+    <string name="status_ongoing">Ongoing</string>
+    <string name="status_completed">Completed</string>
+    <string name="status">Status</string>
+    <string name="year">Year</string>
+    <string name="rating">Rating</string>
+    <string name="duration">Duration</string>
+    <string name="site">Site</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="queued">queued</string>
+    <string name="no_subtitles">No Subtitles</string>
+    <string name="action_default">Default</string>
+    <string name="free_storage">Free</string>
+    <string name="used_storage">Used</string>
+    <string name="app_storage">App</string>
+    <!--plural-->
+    <string name="movies">Movies</string>
+    <string name="tv_series">TV Series</string>
+    <string name="cartoons">Cartoons</string>
+    <string name="anime">Anime</string>
+    <string name="torrent">Torrents</string>
+    <string name="documentaries">Documentaries</string>
+    <string name="ova">OVA</string>
+    <string name="asian_drama">Asian Dramas</string>
+    <string name="livestreams">Livestreams</string>
+    <string name="nsfw">NSFW</string>
+    <string name="others">Others</string>
+    <!--singular-->
+    <string name="movies_singular">Movie</string>
+    <string name="tv_series_singular">Series</string>
+    <string name="cartoons_singular">Cartoon</string>
+    <string name="anime_singular">Anime</string>
+    <string name="ova_singular">OVA</string>
+    <string name="torrent_singular">Torrent</string>
+    <string name="documentaries_singular">Documentary</string>
+    <string name="asian_drama_singular">Asian Drama</string>
+    <string name="live_singular">Livestream</string>
+    <string name="nsfw_singular">NSFW</string>
+    <string name="other_singular">Video</string>
+    <string name="music_singular">Music</string>
+    <string name="audio_book_singular">Audio Book</string>
+    <string name="custom_media_singular">Media</string>
+    <string name="audio_singular">Audio</string>
+    <string name="podcast_singular">Podcast</string>
+    <string name="video_singular">Video</string>
+    <string name="source_error">Source error</string>
+    <string name="remote_error">Remote error</string>
+    <string name="render_error">Renderer error</string>
+    <string name="encoding_error">Encoding error</string>
+    <string name="unsupported_error">Unsupported error</string>
+    <string name="unexpected_error">Unexpected player error</string>
+    <string name="storage_error">Download error, check storage permissions</string>
+    <string name="episode_action_chromecast_episode">Chromecast episode</string>
+    <string name="episode_action_chromecast_mirror">Chromecast mirror</string>
+    <string name="episode_action_cast_mirror">Cast mirror</string>
+    <string name="episode_action_play_in_app">Play in app</string>
+    <string name="episode_action_play_mirror">Play mirror</string>"
+    <string name="episode_action_play_in_format">Play in %s</string>
+    <string name="episode_action_auto_download">Auto download</string>
+    <string name="episode_action_download_mirror">Download mirror</string>
+    <string name="episode_action_reload_links">Reload links</string>
+    <string name="episode_action_download_subtitle">Download subtitles</string>
+    <string name="show_hd">Quality label</string>
+    <string name="show_dub">Dub label</string>
+    <string name="show_sub">Sub label</string>
+    <string name="show_rating">Rating Label</string>
+    <string name="show_title">Title</string>
+    <string name="show_episode_text">Episode Text</string>
+    <string name="poster_ui_settings">Toggle UI elements on poster</string>
+    <string name="no_update_found">No Update Found</string>
+    <string name="check_for_update">Check for Update</string>
+    <string name="video_lock">Lock</string>
+    <string name="video_aspect_ratio_resize">Resize</string>
+    <string name="video_source">Source</string>
+    <string name="video_skip_op">Skip OP</string>
+    <string name="dont_show_again">Don\'t show again</string>
+    <string name="skip_update">Skip this Update</string>
+    <string name="update">Update</string>
+    <string name="watch_quality_pref">Preferred watch quality (WiFi)</string>
+    <string name="watch_quality_pref_data">Preferred watch quality (Mobile Data)</string>
+    <string name="limit_title">Video player title max chars</string>
+    <string name="limit_title_rez">Show player information</string>
+    <string name="video_buffer_size_settings">Video buffer size</string>
+    <string name="video_buffer_length_settings">Video buffer length</string>
+    <string name="video_buffer_disk_settings">Video cache on disk</string>
+    <string name="video_buffer_clear_settings">Clear video and image cache</string>
+    <string name="android_tv_interface_on_seek_settings">Player Shown - Seek Amount</string>
+    <string name="android_tv_interface_on_seek_settings_summary">The seek amount used when the player is visible</string>
+    <string name="android_tv_interface_off_seek_settings">Player Hidden - Seek Amount</string>
+    <string name="android_tv_interface_off_seek_settings_summary">The seek amount used when the player is hidden</string>
+    <string name="video_ram_description">Causes crashes if set too high on devices with low memory, such as Android TV.</string>
+    <string name="video_disk_description">Causes problems if set too high on devices with low storage space, such as Android TV.</string>
+    <string name="dns_pref">DNS over HTTPS</string>
+    <string name="dns_pref_summary">Useful for bypassing ISP blocks</string>
+    <string name="jsdelivr_proxy">GitHub Proxy</string>
+    <string name="jsdelivr_enabled">Could not reach GitHub. Turning on jsDelivr proxy…</string>
+    <string name="jsdelivr_proxy_summary">Bypass blocking of raw github URLs using jsDelivr. May cause updates to be delayed by few days.</string>
+    <string name="add_site_pref">Clone site</string>
+    <string name="remove_site_pref">Remove site</string>
+    <string name="add_site_summary">Add a clone of an existing site, with a different URL</string>
+    <string name="download_path_pref">Download path</string>
+    <string name="nginx_url_pref">NGINX server URL</string>
+    <string name="display_subbed_dubbed_settings">Display Dubbed/Subbed Anime</string>
+    <string name="resize_fit">Fit to screen</string>
+    <string name="resize_fill">Stretch</string>
+    <string name="resize_zoom">Zoom</string>
+    <string name="legal_notice">Disclaimer</string>
+    <string name="pref_category_bypass">ISP Bypasses</string>
+    <string name="pref_category_links">Links</string>
+    <string name="pref_category_app_updates">App updates</string>
+    <string name="pref_category_backup">Backup</string>
+    <string name="pref_category_extensions">Extensions</string>
+    <string name="pref_category_actions">Actions</string>
+    <string name="pref_category_cache">Cache</string>
+    <string name="pref_category_android_tv">Android TV</string>
+    <string name="pref_category_gestures">Gestures</string>
+    <string name="pref_category_security">Security</string>
+    <string name="pref_category_accounts">Accounts</string>
+    <string name="pref_category_player_features">Player features</string>
+    <string name="pref_category_subtitles">Subtitles</string>
+    <string name="pref_category_player_layout">Layout</string>
+    <string name="pref_category_defaults">Defaults</string>
+    <string name="pref_category_looks">Looks</string>
+    <string name="pref_category_ui_features">Features</string>
+    <string name="category_general">General</string>
+    <string name="tv_layout_clock_settings">Show real time clock</string>
+    <string name="tv_layout_clock_settings_des">Show a real time clock at the top of the screen. Applies to the homepage and player</string>
+    <string name="random_button_settings">Random Button</string>
+    <string name="random_button_settings_desc">Show random button on Homepage and Library</string>
+    <string name="provider_lang_settings">Extension languages</string>
+    <string name="app_layout">App Layout</string>
+    <string name="preferred_media_settings">Preferred media</string>
+    <string name="enable_nsfw_on_providers">Enable NSFW on supported Extensions</string>
+    <string name="subtitles_encoding">Subtitle encoding</string>
+    <string name="category_providers">Providers</string>
+    <string name="category_provider_test">Provider test</string>
+    <string name="test_extensions">Test all Extensions</string>
+    <string name="test_extensions_summary">This Test is meant for developers only and does not verifies or denies working of any extension.</string>
+    <string name="category_ui">Layout</string>
+    <string name="automatic">Auto</string>
+    <string name="tv_layout">TV layout</string>
+    <string name="phone_layout">Phone layout</string>
+    <string name="emulator_layout">Emulator layout</string>
+    <string name="primary_color_settings">Primary color</string>
+    <string name="app_theme_settings">App theme</string>
+    <string name="bottom_title_settings">Poster title location</string>
+    <string name="bottom_title_settings_des">Put the title under the poster</string>
+    <!-- account stuff -->
+    <string name="example_password">password123</string>
+    <string name="example_username">Username</string>
+    <string name="example_email">hello@world.com</string>
+    <string name="example_ip">127.0.0.1</string>
+    <string name="example_site_name">NewSiteName</string>
+    <string name="example_site_url">https://example.com</string>
+    <string name="example_lang_name">Language code (en)</string>
+    <string name="login_format" formatted="true">%1$s %2$s</string>
+    <string name="account">account</string>
+    <string name="logout">Log out</string>
+    <string name="login">Log in</string>
+    <string name="auth_locally">Auth Locally</string>
+    <string name="switch_account">Switch account</string>
+    <string name="add_account">Add account</string>
+    <string name="create_account">Create account</string>
+    <string name="add_sync">Add tracking</string>
+    <string name="added_sync_format" formatted="true">Added %s</string>
+    <string name="upload_sync">Sync</string>
+    <string name="sync_score">Rated</string>
+    <string name="sync_score_format" formatted="true">%d / 10</string>
+    <string name="sync_total_episodes_none">/??</string>
+    <string name="sync_total_episodes_some" formatted="true">/%d</string>
+    <string name="authenticated_user" formatted="true">%s authenticated</string>
+    <string name="authenticated_user_fail" formatted="true">Could not log in at %s</string>
+    <!-- ============ -->
+    <string name="disable">Disable</string>
+    <string name="none">None</string>
+    <string name="normal">Normal</string>
+    <string name="all">All</string>
+    <string name="max">Max</string>
+    <string name="min">Min</string>
+    <string name="subtitles_outline">Outline</string>
+    <string name="subtitles_depressed">Depressed</string>
+    <string name="subtitles_shadow">Shadow</string>
+    <string name="subtitles_raised">Raised</string>
+    <string name="subtitle_offset">Sync subs</string>
+    <string name="subtitle_offset_hint">1000 ms</string>
+    <string name="subtitle_offset_title">Subtitle delay</string>
+    <string name="subtitle_offset_extra_hint_later_format">Use this if the subtitles are shown %d ms too early</string>
+    <string name="subtitle_offset_extra_hint_before_format">Use this if subtitles are shown %d ms too late</string>
+    <string name="subtitle_offset_extra_hint_none_format">No subtitle delay</string>
+    <!--
+    Example text (pangram) can optionally be translated; if you do, include all the letters in the alphabet,
+    see: 
+	https://en.wikipedia.org/w/index.php?title=Pangram&oldid=225849300
+	https://en.wikipedia.org/wiki/The_quick_brown_fox_jumps_over_the_lazy_dog
+    -->
+    <string name="subtitles_example_text">The quick brown fox jumps over the lazy dog</string>
+    <string name="recommended">Recommended</string>
+    <string name="player_loaded_subtitles" formatted="true">Loaded %s</string>
+    <string name="player_load_subtitles">Load from file</string>
+    <string name="player_load_subtitles_online">Load from Internet</string>
+    <string name="player_load_one_subtitle_online">Load first available</string>
+    <string name="downloaded_file">Downloaded file</string>
+    <string name="actor_main">Main</string>
+    <string name="actor_supporting">Supporting</string>
+    <string name="actor_background">Background</string>
+    <string name="home_source">Source</string>
+    <string name="home_random">Random</string>
+    <string name="coming_soon">Coming soon…</string>
+    <string name="quality_cam">Cam</string>
+    <string name="quality_cam_rip">CamRip</string>
+    <string name="quality_cam_hd">CamHD</string>
+    <string name="quality_hq">HQ</string>
+    <string name="quality_hd">HD</string>
+    <string name="quality_ts">TS</string>
+    <string name="quality_tc">TC</string>
+    <string name="quality_blueray">Blu-ray</string>
+    <string name="quality_workprint">WP</string>
+    <string name="quality_dvd">DVD</string>
+    <string name="quality_4k">4K</string>
+    <string name="quality_sd">SD</string>
+    <string name="quality_uhd">UHD</string>
+    <string name="quality_hdr">HDR</string>
+    <string name="quality_sdr">SDR</string>
+    <string name="quality_webrip">Web</string>
+    <string name="poster_image">Poster Image</string>
+    <string name="qr_image">QR Code Image</string>
+    <string name="category_player">Player</string>
+    <string name="resolution_and_title">Resolution and title</string>
+    <string name="title">Title</string>
+    <string name="resolution">Resolution</string>
+    <string name="video_info">Media Info</string>
+    <string name="error_invalid_id">Invalid ID</string>
+    <string name="error_invalid_data">Invalid data</string>
+    <string name="error_invalid_url">Invalid URL</string>
+    <string name="error">Error</string>
+    <string name="subtitles_remove_captions">Remove closed captions from subtitles</string>
+    <string name="subtitles_remove_bloat">Remove ads from subtitles</string>
+    <string name="subtitles_filter_lang">Filter by preferred media language</string>
+    <string name="extras">Extras</string>
+    <string name="trailer">Trailer</string>
+    <string name="network_adress_example">https://example.com/example.mp4</string>
+    <string name="referer">Referer (optional)</string>
+    <string name="next">Next</string>
+    <string name="provider_languages_tip">Watch videos in these languages</string>
+    <string name="previous">Previous</string>
+    <string name="skip_setup">Skip setup</string>
+    <string name="app_layout_subtext">Change the look of the app to suit your device</string>
+    <string name="preferred_media_subtext">What do you want to see</string>
+    <string name="setup_done">Done</string>
+    <string name="extensions">Extensions</string>
+    <string name="add_repository">Add repository</string>
+    <string name="repository_name_hint">Repository name (Optional)</string>
+    <string name="repository_url_hint">Repository URL or Shortcode</string>
+    <string name="plugin_loaded">Plugin Loaded</string>
+    <string name="plugin_downloaded">Plugin Downloaded</string>
+    <string name="plugin_deleted">Plugin Deleted</string>
+    <string name="plugin_load_fail" formatted="true">Could not load %s</string>
+    <string name="is_adult">18+</string>
+    <string name="batch_download_start_format" formatted="true">Started downloading %1$d %2$s…</string>
+    <string name="batch_download_finish_format" formatted="true">Downloaded %1$d %2$s</string>
+    <string name="batch_download_nothing_to_download_format" formatted="true">All %s already downloaded</string>
+    <string name="no_plugins_found_error">No plugins found in repository</string>
+    <string name="no_repository_found_error">Repository not found, check the URL and try VPN</string>
+    <string name="batch_download">Batch download</string>
+    <string name="plugin_singular">plugin</string>
+    <string name="plugin">plugins</string>
+    <string name="delete_repository_plugins">This will also delete all repository plugins</string>
+    <string name="delete_repository">Delete repository</string>
+    <string name="delete_plugin">Delete plugin</string>
+    <string name="setup_extensions_subtext">Download the list of sites you want to use</string>
+    <string name="plugins_downloaded" formatted="true">Downloaded: %d</string>
+    <string name="plugins_disabled" formatted="true">Disabled: %d</string>
+    <string name="plugins_not_downloaded" formatted="true">Not downloaded: %d</string>
+    <string name="plugins_updated" formatted="true">Updated %d plugins</string>
+    <string name="blank_repo_message">CloudStream has no sites installed by default. You need to install the sites from repositories.
+\n
+\nJoin our Discord or search online.</string>
+    <string name="view_public_repositories_button">View community repositories</string>
+    <string name="view_public_repositories_button_short">Public list</string>
+    <string name="uppercase_all_subtitles">Uppercase all subtitles</string>
+    <string name="download_all_plugins_from_repo">Warning: CloudStream does not take any responsibility for using third-party extensions and does not provide any support for them!</string>
+    <string name="single_plugin_disabled" formatted="true">%s (Disabled)</string>
+    <string name="tracks">Tracks</string>
+    <string name="compressor">Compressor</string>
+    <string name="compressor_setting">Dynamic Range Compressor</string>
+    <string name="compressor_setting_summary">Show compressor controls in the player (helps balance loud/quiet audio)</string>
+    <string name="compressor_on">On</string>
+    <string name="compressor_on_format">On · %1$d dB / +%2$d dB</string>
+    <string name="compressor_off">Off</string>
+    <string name="compressor_preset_light">Light</string>
+    <string name="compressor_preset_dialog">Dialogue Boost</string>
+    <string name="compressor_preset_heavy">Heavy</string>
+    <string name="compressor_threshold_label">Threshold: %d dB</string>
+    <string name="compressor_makeup_label">Makeup Gain: +%d dB</string>
+    <string name="compressor_threshold_hint">Sounds louder than %d dB get turned down</string>
+    <string name="compressor_makeup_hint">Turns up the overall volume by +%d dB</string>
+    <string name="audio_tracks">Audio tracks</string>
+    <string name="video_tracks">Video tracks</string>
+    <string name="apply_on_restart">Restart the app to see changes.</string>
+    <string name="restart">Restart</string>
+    <string name="stop">Stop</string>
+    <string name="safe_mode_title">Safe mode on</string>
+    <string name="safe_mode_description">All extensions were turned off due to a crash to help you find the one causing trouble.</string>
+    <string name="safe_mode_crash_info">View crash info</string>
+    <string name="extension_rating" formatted="true">Rating: %s</string>
+    <string name="extension_description">Description</string>
+    <string name="extension_version">Version</string>
+    <string name="extension_status">Status</string>
+    <string name="extension_size">Size</string>
+    <string name="extension_authors">Authors</string>
+    <string name="extension_types">Supported</string>
+    <string name="extension_language">Language</string>
+    <string name="extension_install_first">Install the extension first</string>
+    <string name="hls_playlist">HLS Playlist</string>
+    <string name="player_pref">Preferred video player</string>
+    <string name="player_settings_play_in_app">Internal player</string>
+    <string name="player_settings_always_ask">Always ask</string>
+    <string name="player_settings_select_cast_device">Select cast device</string>
+    <string name="app_not_found_error">App not found</string>
+    <string name="all_languages_preference">All Languages</string>
+    <string name="skip_type_format" formatted="true">Skip %s</string>
+    <string name="skip_type_op">Opening</string>
+    <string name="skip_type_ed">Ending</string>
+    <string name="skip_type_recap">Recap</string>
+    <string name="skip_type_mixed_ed">Mixed ending</string>
+    <string name="skip_type_mixed_op">Mixed opening</string>
+    <string name="skip_type_credits">Credits</string>
+    <string name="skip_type_preview">Preview</string>
+    <string name="skip_type_intro">Intro</string>
+    <string name="clear_history">Clear history</string>
+    <string name="history">History</string>
+    <string name="enable_skip_op_from_database_des">Show skip popups for opening/ending</string>
+    <string name="clipboard_too_large">Too much text. Unable to save to clipboard.</string>
+    <string name="clipboard_permission_error">Error accessing Clipboard, Please try again.</string>
+    <string name="clipboard_unknown_error">Error copying, Please copy logcat and contact app support.</string>
+    <string name="action_mark_as_watched">Mark as watched</string>
+    <string name="action_remove_from_watched">Remove from watched</string>
+    <string name="confirm_exit_dialog">Are you sure you want to exit\?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="open_downloaded_repo">Open repository</string>
+    <string name="battery_dialog_title">Disable Battery optimization</string>
+    <string name="battery_dialog_message">To ensure uninterrupted downloads and notifications for subscribed
+        TV shows, CloudStream needs permission to run in background. By pressing "OK", you\'ll be shown a request dialog.
+        Please press \'Allow\'.\n\nPlease note, this permission does not mean CS3 will drain your battery. It will only operate in the background when necessary, such as
+        when receiving notifications or downloading videos from official extensions.</string>
+    <string name="app_unrestricted_toast">App battery usage is already set to unrestricted</string>
+    <string name="app_info_intent_error">Unable to open CloudStream\'s App info.</string>
+    <string name="update_notification_downloading">Downloading app update…</string>
+    <string name="update_notification_installing">Installing app update…</string>
+    <string name="update_notification_failed">Could not install the new version of the app</string>
+    <string name="apk_installer_legacy">Legacy</string>
+    <string name="apk_installer_package_installer">PackageInstaller</string>
+    <string name="delayed_update_notice">App will be updated upon exit</string>
+    <string name="sort_by">Sort by</string>
+    <string name="sort">Sort</string>
+    <string name="sort_rating_desc">Rating (High to Low)</string>
+    <string name="sort_rating_asc">Rating (Low to High)</string>
+    <string name="sort_updated_new">Updated (New to Old)</string>
+    <string name="sort_updated_old">Updated (Old to New)</string>
+    <string name="sort_alphabetical_a">Alphabetical (A to Z)</string>
+    <string name="sort_alphabetical_z">Alphabetical (Z to A)</string>
+    <string name="sort_episodes_number_asc">Episode (Ascending)</string>
+    <string name="sort_episodes_number_desc">Episode (Descending)</string>
+    <string name="sort_episodes_rating_high_low">Rating (Highest)</string>
+    <string name="sort_episodes_rating_low_high">Rating (Lowest)</string>
+    <string name="sort_episodes_date_newest">Air Date (Newest)</string>
+    <string name="sort_episodes_date_oldest">Air Date (Oldest)</string>
+    <string name="sort_button_episode">Ep %s</string>
+    <string name="sort_button_rating">Rating %s</string>
+    <string name="sort_button_date">Date %s</string>
+    <string name="select_library">Select Library</string>
+    <string name="open_with">Open with</string>
+    <string name="empty_library_no_accounts_message">Your library is empty :(
+\nLog in on a library account or add shows to your local library.</string>
+    <string name="empty_library_logged_in_message">This list is empty. Try switching to another one.</string>
+    <string name="safe_mode_file">Safe mode file found!\nNot loading any extensions on startup until file is removed.</string>
+    <string name="revert">Revert</string>
+    <string name="subscription_in_progress_notification">Updating subscribed shows</string>
+    <string name="subscription_list_name">Subscribed</string>
+    <string name="subscription_new">Subscribed to %s</string>
+    <string name="subscription_deleted">Unsubscribed from %s</string>
+    <string name="subscription_episode_released">Episode %d released!</string>
+    <string name="action_subscribe">Subscribe</string>
+    <string name="action_unsubscribe">Unsubscribe</string>
+    <string name="profile_number">Profile %d</string>
+    <string name="profile_settings">Profile settings</string>
+    <string name="profile_hide_negative_sources">Hide sources with a negative priority</string>
+    <string name="profile_hide_error_sources">Hide sources with errors</string>
+    <plurals name="links_hidden">
+        <item quantity="one">%d hidden link</item>
+        <item quantity="other">%d hidden links</item>
+    </plurals>
+    <string name="wifi">Wi-Fi</string>
+    <string name="mobile_data">Mobile data</string>
+    <string name="set_default">Set default</string>
+    <string name="use">Use</string>
+    <string name="edit">Edit</string>
+    <string name="source_priority">Source priority</string>
+    <string name="source_priority_help">Decide how video sources should be sorted in the player</string>
+    <string name="profiles">Profiles</string>
+    <string name="help">Help</string>
+    <string name="quality_profile_help">
+        Here you can change how the sources are ordered. If a video has a higher priority it will appear higher in the source selection.
+        The sum of the source priority and the quality priority is the video priority.
+        \n\nSource A: 3
+        \nQuality B: 7
+        \nWill have a combined video priority of 10.
+
+        \n\nNOTE: If the sum is 10 or more the player will automatically skip loading when that link is loaded!
+    </string>
+    <string name="qualities">Qualities</string>
+    <string name="profile_background_des">Profile background</string>
+    <string name="unable_to_inflate">UI was unable to be created correctly, this is a MAJOR BUG and should be reported immediately %s</string>
+    <string name="already_voted">You have already voted</string>
+    <string name="favorites_list_name">Favorites</string>
+    <string name="favorite_added">%s added to favorites</string>
+    <string name="favorite_removed">%s removed from favorites</string>
+    <string name="action_add_to_favorites">Add to favorites</string>
+    <string name="action_remove_from_favorites">Remove from favorites</string>
+    <string name="duplicate_title">Potential Duplicate Found</string>
+    <string name="duplicate_add">Add</string>
+    <string name="duplicate_replace">Replace</string>
+    <string name="duplicate_replace_all">Replace All</string>
+    <string name="duplicate_message_single" formatted="true">
+        It appears that a potentially duplicate item already exists in your library: \'%s.\'
+
+        \n\nWould you like to add this item anyway, replace the existing one, or cancel the action?
+    </string>
+    <string name="duplicate_message_multiple" formatted="true">
+        Potential duplicate items have been found in your library:
+
+        \n\n%s
+
+        \n\nWould you like to add this item anyway, replace the existing ones, or cancel the action?
+    </string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="enter_pin_with_name" formatted="true">Enter PIN for %s</string>
+    <string name="enter_current_pin">Enter Current PIN</string>
+    <string name="lock_profile">Lock Profile</string>
+    <string name="pin">PIN</string>
+    <string name="pin_error_incorrect">Incorrect PIN. Please try again.</string>
+    <string name="pin_error_length">PIN must be 4 characters</string>
+    <string name="select_an_account">Select an Account</string>
+    <string name="no_account">No account</string>
+    <string name="manage_accounts">Manage Accounts</string>
+    <string name="edit_account">Edit account</string>
+    <string name="logged_account" formatted="true">Logged in as %s</string>
+    <string name="skip_startup_account_select_pref">Skip account selection at startup</string>
+    <string name="use_default_account">Use Default Account</string>
+    <string name="rotate_video">Rotate</string>
+    <string name="rotate_video_desc">Display a toggle button for screen orientation</string>
+    <string name="auto_rotate_video_desc">Enable automatic switching of screen orientation based on video orientation</string>
+    <string name="auto_rotate_video">Auto rotate</string>
+    <string name="favorite">Favorite</string>
+    <string name="unfavorite">Unfavorite</string>
+    <!-- For Biometrics -->
+    <string name="biometric_authentication_title">Unlock CloudStream</string>
+    <string name="biometric_setting">Lock with Biometrics</string>
+    <string name="password_pin_authentication_title">Password/PIN Authentication</string>
+    <string name="biometric_unsupported">Biometric authentication is not supported on this device</string>
+    <string name="biometric_setting_summary">Unlock the app with Fingerprint, Face ID, PIN, Pattern and Password.</string>
+    <string name="biometric_prompt_description">After a few failed attempts, the prompt will close. Simply restart the app to try again.</string>
+    <string name="biometric_warning">Your CloudStream data has been backed up now. Although the possibility of this is very low, all devices can behave differently. In the rare case, that you get locked out from accessing the app, clear the app data completely and restore from a backup. We are very sorry for any inconvenience arising from this.</string>
+    <string name="reset_btn">Reset</string>
+    <string name="cs3wiki">CloudStream Wiki</string>
+    <string name="device_pin_url_message">Visit <b>%s</b> on your smartphone or computer and enter the above code</string>
+    <string name="device_pin_error_message">Can\'t get the device PIN code, try local authentication</string>
+    <string name="device_pin_expired_message">PIN code is now expired !</string>
+    <string name="device_pin_counter_text">Code expires in %1$dm %2$ds</string>
+    <string name="sort_release_date_new">Release Date (New to Old)</string>
+    <string name="sort_release_date_old">Release Date (Old to New)</string>
+    <string name="hide_player_control_names">Hide names of the player\'s controls</string>
+    <string name="preview_seekbar">Seekbar preview</string>
+    <string name="preview_seekbar_desc">Enable preview thumbnail on seekbar</string>
+    <string name="no_subtitles_loaded">No subtitles loaded yet</string>
+    <string name="backup_path_title">Backup folder location</string>
+    <string name="custom">Custom</string>
+    <!--confirm exit dialog-->
+    <string name="confirm_before_exiting_title">Confirm before exiting</string>
+    <string name="confirm_before_exiting_desc">Show dialog before exiting the app</string>
+    <!--confirm exit dialog-->
+    <string name="show">Show</string>
+    <string name="dont_show">Don\'t Show</string>
+    <string name="subs_edge_size">Edge Size</string>
+    <string name="torrent_preferred_media">Enable torrent in Settings/Providers/Preferred media</string>
+    <string name="torrent_not_accepted">Restart app and accept Stream Torrent pop-up to proceed.</string>
+    <string name="software_decoding">Software decoding</string>
+    <string name="software_decoding_desc">Software decoding enables the player to play video files not supported by your device, but may cause laggy or unstable playback on high resolution.</string>
+    <string name="volume_exceeded_100">Volume has exceeded 100%</string>
+    <string name="slide_up_again_to_exceed_100">Slide up again to go beyond 100%</string>
+    <string name="update_plugins">Update Plugins</string>
+    <!--Manual Update Button-->
+    <string name="update_plugins_manually">Update plugins manually</string>
+    <string name="starting_plugin_update_manually">Starting plugin update process!</string>
+    <string name="plugins_updated_manually">Successfully updated %d plugin(s)</string>
+    <string name="no_plugins_updated_manually">No plugins were updated.</string>
+    <string name="player_notification_channel_name">Player notifications</string>
+    <string name="player_notification_channel_description">The player notification for controlling the playback from the background</string>
+    <string name="subtitles_from_embedded">Embedded</string>
+    <string name="subtitles_from_online">Online</string>
+    <string name="all_subtitles_bold">Make all subtitles bold</string>
+    <string name="all_subtitles_italic">Make all subtitles italic</string>
+    <string name="background_radius">Background Radius</string>
+    <string name="background">Background</string>
+    <string name="download_parallel_settings_des">How many different items that can be downloaded in parallel</string>
+    <string name="parallel_downloads">Parallel downloads</string>
+    <string name="concurrent_connections">Concurrent connections</string>
+    <string name="concurrent_connections_settings_des">How many concurrent connections each download can use while downloading</string>
+    <string name="go_to_downloads">Go to Downloads</string>
+    <string name="no_internet_connection">
+        No internet connection.
+        \n\nPlease connect to the internet and try again, or watch your downloads while you are offline.
+    </string>
+    <string name="overscan_settings_des">Changes the bounds of the screen</string>
+    <string name="overscan_settings">Overscan</string>
+    <string name="poster_size_settings_des">Changes size of posters</string>
+    <string name="poster_size_settings">Poster size</string>
+    <string name="speedup_title">LongPress Speed Toggle</string>
+    <string name="speedup_summary">Hold to get 2x speed</string>
+    <string name="edit_profile_image_title">Edit Profile Image</string>
+    <string name="edit_profile_image_url">Url</string>
+    <string name="edit_profile_image_picker">Image picker</string>
+    <string name="edit_profile_image_default">Default images</string>
+    <string name="edit_profile_image_hint">Enter Profile Image URL</string>
+    <string name="edit_profile_image_error_empty">No URL Found</string>
+    <string name="edit_profile_image_error_invalid">Invalid URL or Image</string>
+    <string name="edit_profile_image_success">Successfully Image Updated</string>
+    <string name="action_mark_watched_up_to_this_episode">Mark as watched up to this episode</string>
+    <string name="action_remove_mark_watched_up_to_this_episode">Remove watched up to this episode</string>
+    <string name="action_reload">Reloaded</string>
+    <string name="reload_provider">Reload Provider</string>
+    <string name="name">Name</string>
+    <string name="source_name">Source Name</string>
+    <string name="resolution_and_name">Resolution and name</string>
+    <string name="download_all">Download all</string>
+    <string name="cancel_all">Cancel all</string>
+    <string name="download_episode_range">Do you want to download episode %s?</string>
+    <string name="cancel_queue_message">Do you want to cancel all queued downloads?</string>
+    <string name="subs_subtitle_alignment">Subtitle Alignment</string>
+    <string name="bottom_left">Bottom left</string>
+    <string name="bottom_center">Bottom center</string>
+    <string name="bottom_right">Bottom right</string>
+    <string name="middle_left">Middle left</string>
+    <string name="middle_center">Middle center</string>
+    <string name="middle_right">Middle right</string>
+    <string name="top_left">Top left</string>
+    <string name="top_center">Top center</string>
+    <string name="top_right">Top right</string>
+    <plurals name="downloads_active">
+        <item quantity="one">%d active download</item>
+        <item quantity="other">%d active downloads</item>
+    </plurals>
+    <plurals name="downloads_queued">
+        <item quantity="one">%d download queued</item>
+        <item quantity="other">%d downloads queued</item>
+    </plurals>
+    <string name="player_is_live">Live</string>
+    <string name="installed_plugins">Installed plugins</string>
+</resources>
