@@ -166,6 +166,7 @@ android {
     productFlavors {
         create("stable") {
             dimension = "state"
+            applicationIdSuffix = ".jay"
         }
         create("prerelease") {
             dimension = "state"
