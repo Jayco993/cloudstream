@@ -144,6 +144,8 @@ android {
 
     buildTypes {
         release {
+            // Local player build: sign with the standard debug key.
+            signingConfig = signingConfigs.getByName("debug")
             isDebuggable = false
             isMinifyEnabled = false
             isShrinkResources = false
@@ -166,6 +168,8 @@ android {
     productFlavors {
         create("stable") {
             dimension = "state"
+            // Install alongside official CloudStream.
+            applicationIdSuffix = ".localplayer"
         }
         create("prerelease") {
             dimension = "state"
