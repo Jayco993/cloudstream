@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: jay-cloudstream-apk
@@ -58,3 +58,14 @@ jobs:
           path: app/build/outputs/apk/prerelease/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish APK GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "jay-prerelease-${GITHUB_RUN_NUMBER}" "$APK_PATH" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "CloudStream Jay APK #${GITHUB_RUN_NUMBER}" \
+            --notes "Personal prerelease-debug build from ${GITHUB_SHA}. The APK uses the Android debug signing key." \
+            --prerelease
