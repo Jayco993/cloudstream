@@ -1,6 +1,7 @@
-name: Build Local Player APK (branch push)
+name: Build Local Player APK
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - local-player
